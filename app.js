@@ -79,7 +79,10 @@
     "0xd8aeb1580643211246442f475375d48a0dd657d2": "https://nftzworld.github.io/folio2/play-{id}.html",
     "0xf3052374cfb97dc6b8da56e4f725035a2a4c2aed": "https://nftzworld.github.io/mahjong/play.html",
     "0xdad08579c430b18fcd104e2db0219c5a1423ff0c": "https://nftzworld.github.io/yap/play.html",
-    "0x42ca9a5fefe18453d9b6a2175592c580784dc4f0": "https://nftzworld.github.io/pap2-one/play.html"
+    "0x42ca9a5fefe18453d9b6a2175592c580784dc4f0": "https://nftzworld.github.io/pap2-one/play.html",
+    "0x77973da54f5125963c57d303741c525c1e510e90": "https://nftzworld.github.io/bonkit/play-{id}.html",
+    "0xe38c7d0ed787ae6ab5a2b40dc7cc3a2001320abd": "https://nftzworld.github.io/byte/play-{id}.html",
+    "0xf197e65c7f09bf8fea40b1092ac62791648f199f": "https://nftzworld.github.io/word/play-{id}.html"
   };
   // Token 1 of these two sets is published as play.html. play-1.html is not on the page.
   const PLAY_HTML_FOR_ONE = {

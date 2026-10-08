@@ -48,6 +48,12 @@
     "port": 1980
   },
   {
+    "name": "NFTzWORLD BonKit",
+    "address": "0x77973DA54F5125963C57D303741c525c1E510e90",
+    "status": "SEATED",
+    "port": 5527
+  },
+  {
     "name": "NFTzWORLD BRITE",
     "address": "0x7C8c59f7451Fe969ad7784c4BC7B63220B58DEDb",
     "status": "SEATED",
