@@ -1,0 +1,404 @@
+[
+  {
+    "name": "GOLD LODGE 33",
+    "address": "0x207fe162029a0aB160918Dd70922DA4082833Af9",
+    "status": "LIVE",
+    "port": 3033
+  },
+  {
+    "name": "GrveKeeper",
+    "address": "0x42E9B898Bd346Fb7C99A7c3c21E08e31C20d425d",
+    "status": "CONTRACT",
+    "port": 4666
+  },
+  {
+    "name": "LOT 25 Flytrap TV",
+    "address": "0x1035bF20CC6fFf7F4113eEf5A4Dd45b6F115d125",
+    "status": "LIVE",
+    "port": 2525
+  },
+  {
+    "name": "NFTzWORLD Ads",
+    "address": "0x643bbd6CF6EeBc9567a96d0732dbf1975FC33315",
+    "status": "LIVE",
+    "port": 1991
+  },
+  {
+    "name": "NFTzWORLD Ads Cabinet",
+    "address": "0xd62Eb39B8a074c49772f9c3fa123616ca2600b41",
+    "status": "LIVE",
+    "port": 1992
+  },
+  {
+    "name": "NFTzWORLD ALARM",
+    "address": "0xf604B92817541Aff6b586a2fE3e7778baa1bC533",
+    "status": "CONTRACT",
+    "port": 1313
+  },
+  {
+    "name": "NFTzWORLD AMBSACE",
+    "address": "0x487F4f1384349058C693DE37266382ae04BCd07b",
+    "status": "CONTRACT",
+    "port": 2015
+  },
+  {
+    "name": "NFTzWORLD Arcade",
+    "address": "0x92D07Ab25f961D1E211F31078aC56B17552596DE",
+    "status": "LIVE",
+    "port": 1980
+  },
+  {
+    "name": "NFTzWORLD BRITE",
+    "address": "0x7C8c59f7451Fe969ad7784c4BC7B63220B58DEDb",
+    "status": "SEATED",
+    "port": 1282
+  },
+  {
+    "name": "NFTzWORLD BRITE BLACK",
+    "address": "0x3a09b1D3d3FbDd53342D56EB4075C1ADDF8D1eC9",
+    "status": "SEATED",
+    "port": 1286
+  },
+  {
+    "name": "NFTzWORLD Brite Pixel Art Pad",
+    "address": "0x7f48268D4B23A4491370650CE63819D40958a153",
+    "status": "SEATED",
+    "port": 5502
+  },
+  {
+    "name": "NFTzWORLD BYTE",
+    "address": "0xE38C7D0Ed787aE6Ab5a2b40DC7Cc3a2001320ABd",
+    "status": "CONTRACT",
+    "port": 2048
+  },
+  {
+    "name": "NFTzWORLD CALC",
+    "address": "0x426d619638D5255dB253514A995812b0ab87AAe7",
+    "status": "CONTRACT",
+    "port": 2718
+  },
+  {
+    "name": "NFTzWORLD COOK",
+    "address": "0xc36A1A553E953B53B98dFE3AE6EF9276f330f439",
+    "status": "SEATED",
+    "port": 5526
+  },
+  {
+    "name": "NFTzWORLD Copy Cat",
+    "address": "0xd8725693c89A1fd7d76c6C3BD1A7372eafe4494e",
+    "status": "LIVE",
+    "port": 2222
+  },
+  {
+    "name": "NFTzWORLD Copy Cat Cabinet",
+    "address": "0x65E8c3e70e5AA904C2fE233c8DB465fF37B077c5",
+    "status": "LIVE",
+    "port": 2223
+  },
+  {
+    "name": "NFTzWORLD Elytra",
+    "address": "0x37eAABa53e6469ACa38E74c1e40888377Eee73e6",
+    "status": "SEATED",
+    "port": 2423
+  },
+  {
+    "name": "NFTzWORLD FLARE",
+    "address": "0xD300F903DC8113B79546EeB476834F394bFe70D9",
+    "status": "SEATED",
+    "port": 2440
+  },
+  {
+    "name": "NFTzWORLD FOLIO",
+    "address": "0x0FEC9d38dc17D222Fec9336CbB05E9E52b84a198",
+    "status": "SEATED",
+    "port": 2424
+  },
+  {
+    "name": "NFTzWORLD FOLIO 2.0",
+    "address": "0xD8AEb1580643211246442f475375D48a0dD657d2",
+    "status": "LIVE",
+    "port": 5514
+  },
+  {
+    "name": "NFTzWORLD GOLD \u2206",
+    "address": "0xF9A5B1B337EABf8BbC8Aa4deC79272e7D8Dc4062",
+    "status": "LIVE",
+    "port": 3030
+  },
+  {
+    "name": "NFTzWORLD HOOK",
+    "address": "0x28BC0634afBECEea0c1fB1CfCdcd9cc10f5CA42A",
+    "status": "SEATED",
+    "port": 5525
+  },
+  {
+    "name": "NFTzWORLD HUNTERS",
+    "address": "0x63a2BC9CBb6b8E94017754704addD3c1Ad9013D5",
+    "status": "CONTRACT",
+    "port": 2013
+  },
+  {
+    "name": "NFTzWORLD KIBITZ",
+    "address": "0xB3EcB06B36ED5C904e656ecFd253d05F217F9569",
+    "status": "SEATED",
+    "port": 5505
+  },
+  {
+    "name": "NFTzWORLD LAST SEAT",
+    "address": "0x82FDaeCEfEA1e079df5cE7123179b7abb314c15c",
+    "status": "LIVE",
+    "port": 3031
+  },
+  {
+    "name": "NFTzWORLD LONE",
+    "address": "0x5588C32bC5ec3A7f1EAb40A594B9C6b3d699A2c2",
+    "status": "CONTRACT",
+    "port": 2014
+  },
+  {
+    "name": "NFTzWORLD MAGENTA",
+    "address": "0x0A9c99670BbAc730Fef4Dc67c401BC7b4afF91D6",
+    "status": "SEATED",
+    "port": 1977
+  },
+  {
+    "name": "NFTzWORLD MAHJONG",
+    "address": "0xF3052374Cfb97dC6B8dA56e4F725035A2a4C2aeD",
+    "status": "SEATED",
+    "port": 5520
+  },
+  {
+    "name": "NFTzWORLD Moon Bench",
+    "address": "0xCBf3a0eE4782618389d4645CF313aE5f18ace8C9",
+    "status": "LIVE",
+    "port": 1970
+  },
+  {
+    "name": "NFTzWORLD MoonBase",
+    "address": "0x150355D91FD7D3FBCB0b2442820B82515C2d7A18",
+    "status": "CONTRACT",
+    "port": 1969
+  },
+  {
+    "name": "NFTzWORLD NEON",
+    "address": "0xaea7A3FA6815Afcd28FCeC750928eB692a21041F",
+    "status": "CONTRACT",
+    "port": 1212
+  },
+  {
+    "name": "NFTzWORLD NEST",
+    "address": "0x667d64537B64cbCA10665A05B24E6d404Ab49dA0",
+    "status": "CONTRACT",
+    "port": 2226
+  },
+  {
+    "name": "NFTzWORLD NFT Shot",
+    "address": "0x8C26E21541Eb75094e8De0fD05d5AbaEFd56A544",
+    "status": "LIVE",
+    "port": 5501
+  },
+  {
+    "name": "NFTzWORLD NIBBLE",
+    "address": "0x6efeD6fd8ff2E86F31c70a0607A270576fcBFA83",
+    "status": "CONTRACT",
+    "port": 8421
+  },
+  {
+    "name": "NFTzWORLD OpenPlea",
+    "address": "0xE5B2ff7Eda19E4A1bE70719c4f7C66B2b14ea25d",
+    "status": "SEATED",
+    "port": 5512
+  },
+  {
+    "name": "NFTzWORLD PAD",
+    "address": "0x4316d2AF2bE81cA7C065F7f37e9663B36457d1eD",
+    "status": "SEATED",
+    "port": 4410
+  },
+  {
+    "name": "NFTzWORLD PIX",
+    "address": "0x2d237dc909782E50312AeB940eF018D62e1f12C0",
+    "status": "SEATED",
+    "port": 1280
+  },
+  {
+    "name": "NFTzWORLD Pix Art Pad",
+    "address": "0xe0145DE817Ab510a7c3439E7727E202eA2657688",
+    "status": "LIVE",
+    "port": 5513
+  },
+  {
+    "name": "NFTzWORLD PIX BLACK",
+    "address": "0x8e13903fAFcaC2A0d3F690bdA0295B6E498ACda5",
+    "status": "SEATED",
+    "port": 1283
+  },
+  {
+    "name": "NFTzWORLD PIX BLACK 24",
+    "address": "0x4073ADBfD1574B461c4f413f92d9b7856F1CaEE8",
+    "status": "SEATED",
+    "port": 1285
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad",
+    "address": "0x21725DB3e31248E83268f24ba0c865a1E1eC6623",
+    "status": "SEATED",
+    "port": 2420
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad 2.0",
+    "address": "0x42cA9A5fEfE18453d9B6a2175592C580784dc4f0",
+    "status": "SEATED",
+    "port": 5522
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad Draw",
+    "address": "0x45d0CFa82841b79e2d05bb3E212f98780CCbc838",
+    "status": "LIVE",
+    "port": 5493
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad Forge",
+    "address": "0x6901ea34DC2E6526E7F92a69C28d00Be738bf696",
+    "status": "LIVE",
+    "port": 5492
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad Gems",
+    "address": "0xBc74b11dC9F5C4b04D9E88F76d48870a8ba1591A",
+    "status": "SEATED",
+    "port": 2421
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad Ghillie",
+    "address": "0x32358D816B38e040C214C9dCC90f43144EEAeb68",
+    "status": "SEATED",
+    "port": 5488
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad Panthera leo",
+    "address": "0x71F50bAc75861C216425BAe8a3B97cBffeC476D4",
+    "status": "LIVE",
+    "port": 5494
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad Shell",
+    "address": "0x0f0614D103Ff1F7C89eE5ba9aFba4F38f4813bBB",
+    "status": "LIVE",
+    "port": 5504
+  },
+  {
+    "name": "NFTzWORLD Pixel Art Pad XL",
+    "address": "0xbF9422459AD5f7973DD99955C3f086210D94F7B0",
+    "status": "SEATED",
+    "port": 5497
+  },
+  {
+    "name": "NFTzWORLD RACK",
+    "address": "0x316959D68965A53bF89Fd3d8461e9a5A030256fc",
+    "status": "CONTRACT",
+    "port": 1920
+  },
+  {
+    "name": "NFTzWORLD SCORE",
+    "address": "0xc7A964f657aE3BBc8d503088d8419a9113403EB1",
+    "status": "SEATED",
+    "port": 2433
+  },
+  {
+    "name": "NFTzWORLD SEEK",
+    "address": "0x61D99000dAe67bAcB36A7Ba7684F15f143dD6d95",
+    "status": "LIVE",
+    "port": 4040
+  },
+  {
+    "name": "NFTzWORLD SKEET",
+    "address": "0x383C3B9B383F98b89c3B61534904140118bE5D11",
+    "status": "CONTRACT",
+    "port": 2017
+  },
+  {
+    "name": "NFTzWORLD SLATE",
+    "address": "0x8da12fb3fD1BB83642052FA7CFe324284713B71c",
+    "status": "SEATED",
+    "port": 3232
+  },
+  {
+    "name": "NFTzWORLD SNOOZE",
+    "address": "0xb0fDA9D99C0bA583f2A612aaB6a881fD176392F5",
+    "status": "CONTRACT",
+    "port": 5050
+  },
+  {
+    "name": "NFTzWORLD TONE",
+    "address": "0x37f3f2Df8c268c787f2435727D767256fc21a7E1",
+    "status": "CONTRACT",
+    "port": 1360
+  },
+  {
+    "name": "NFTzWORLD WAR",
+    "address": "0xA858f75d4BB10007C83c95cf737615C8339a7BC7",
+    "status": "LIVE",
+    "port": 2224
+  },
+  {
+    "name": "NFTzWORLD WAR Cabinet",
+    "address": "0x0db2Fe382a9ED46703d1dd822ea4407f28bA0211",
+    "status": "LIVE",
+    "port": 2225
+  },
+  {
+    "name": "NFTzWORLD WIRE",
+    "address": "0xA1B98571901A3b4f11836900e5c995f9b5c0d2C3",
+    "status": "CONTRACT",
+    "port": 1941
+  },
+  {
+    "name": "NFTzWORLD WORD",
+    "address": "0xf197E65c7f09bf8FeA40B1092aC62791648F199F",
+    "status": "CONTRACT",
+    "port": 4096
+  },
+  {
+    "name": "NFTzWORLD WORKS",
+    "address": "0x0b8DDA1e0D2060B18A132aA0D8a12AD45eC90058",
+    "status": "CONTRACT",
+    "port": 4128
+  },
+  {
+    "name": "NFTzWORLD XLIAN",
+    "address": "0x463FD27138F2d2643Dbd95475509d277F0EF3BE1",
+    "status": "CONTRACT",
+    "port": 2016
+  },
+  {
+    "name": "NFTzWORLD YAP",
+    "address": "0xdAd08579c430b18fCd104e2dB0219c5a1423Ff0C",
+    "status": "LIVE",
+    "port": 5524
+  },
+  {
+    "name": "NFTzWORLD Zee",
+    "address": "0x31cE6652c44126a7F4b30F18A7474A3fc53a528a",
+    "status": "LIVE",
+    "port": 2626
+  },
+  {
+    "name": "OCHRE",
+    "address": "0x40b93987369126Dd6Ba3ce8a0F1Df0172Af94ed4",
+    "status": "SEATED",
+    "port": 5517
+  },
+  {
+    "name": "RED LODGE \u2206333",
+    "address": "0xA3172286f5Cc011fEB40130b179f17aB5996c8CF",
+    "status": "LIVE",
+    "port": 3133
+  },
+  {
+    "name": "SpyEar",
+    "address": "0x834a2aa520f58bf6670740463a00e6ecf6022d0c",
+    "status": "LIVE",
+    "port": 1946
+  }
+]

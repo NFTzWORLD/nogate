@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NoGate</title>
+  <link rel="icon" href="art/logo.jpg?v=1">
+  <link rel="stylesheet" href="app.css?v=16">
+</head>
+<body data-size="desk">
+  <header class="top">
+    <div class="bar tool">
+      <a class="brand" href="#/">
+        <img src="art/logo.jpg?v=1" alt="">
+        <span>NoGate</span>
+      </a>
+      <details class="desk" id="deskMenu">
+        <summary>View</summary>
+        <div class="desk-panel">
+          <a href="#/">Play</a>
+          <a href="#/book">Book</a>
+          <a href="#/c/" id="navHold" hidden>Holdings</a>
+          <a href="http://127.0.0.1:5477/" id="navInspect" target="_blank" rel="noreferrer">Inspect</a>
+          <label>Play size
+            <select id="playSize">
+              <option value="phone">Phone</option>
+              <option value="pad">Pad</option>
+              <option value="desk">Desk</option>
+              <option value="wall">Wall</option>
+            </select>
+          </label>
+          <button type="button" id="btnReload">Reload app</button>
+        </div>
+      </details>
+      <div class="who">
+        <button type="button" id="btnConnect">Connect</button>
+      </div>
+    </div>
+  </header>
+  <main id="main"></main>
+  <footer>
+    <div class="bar foot">
+      <p id="log"></p>
+      <p id="neighbor"></p>
+    </div>
+  </footer>
+  <script src="vendor/ethers.umd.min.js"></script>
+  <script src="app.js?v=19"></script>
+</body>
+</html>

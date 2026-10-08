@@ -1,0 +1,10 @@
+{
+  "name": "NoGate",
+  "pages": true,
+  "preview": true,
+  "market": "",
+  "chainId": 4663,
+  "shop": "",
+  "rpc": "https://rpc.mainnet.chain.robinhood.com",
+  "explorer": "https://robinhoodchain.blockscout.com"
+}
