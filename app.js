@@ -75,14 +75,21 @@
   const PAGE_PLAY = {
     "0xc36a1a553e953b53b98dfe3ae6ef9276f330f439": "https://nftzworld.github.io/cook/play-{id}.html",
     "0x28bc0634afbeceea0c1fb1cfcdcd9cc10f5ca42a": "https://nftzworld.github.io/hook/play-{id}.html",
-    "0xe0145de817ab510a7c3439e7727e202ea2657688": "https://nftzworld.github.io/pixap/play.html",
-    "0xd8aeb1580643211246442f475375d48a0dd657d2": "https://nftzworld.github.io/folio2/play.html",
+    "0xe0145de817ab510a7c3439e7727e202ea2657688": "https://nftzworld.github.io/pixap/play-{id}.html",
+    "0xd8aeb1580643211246442f475375d48a0dd657d2": "https://nftzworld.github.io/folio2/play-{id}.html",
     "0xf3052374cfb97dc6b8da56e4f725035a2a4c2aed": "https://nftzworld.github.io/mahjong/play.html",
     "0xdad08579c430b18fcd104e2db0219c5a1423ff0c": "https://nftzworld.github.io/yap/play.html",
     "0x42ca9a5fefe18453d9b6a2175592c580784dc4f0": "https://nftzworld.github.io/pap2-one/play.html"
   };
+  // Token 1 of these two sets is published as play.html. play-1.html is not on the page.
+  const PLAY_HTML_FOR_ONE = {
+    "0xe0145de817ab510a7c3439e7727e202ea2657688": "https://nftzworld.github.io/pixap/play.html",
+    "0xd8aeb1580643211246442f475375d48a0dd657d2": "https://nftzworld.github.io/folio2/play.html"
+  };
   function pagePlay(addr, id) {
-    const pat = PAGE_PLAY[String(addr || "").toLowerCase()];
+    const key = String(addr || "").toLowerCase();
+    if (String(id) === "1" && PLAY_HTML_FOR_ONE[key]) return PLAY_HTML_FOR_ONE[key];
+    const pat = PAGE_PLAY[key];
     if (!pat) return "";
     return pat.replace("{id}", String(id));
   }
