@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <title></title>
+  <style>
+    html,body { margin:0; height:100%; background:#000; overflow:hidden; user-select:none; touch-action:manipulation; }
+    #grid {
+      position:absolute; inset:2.5%;
+      display:grid;
+      grid-template-columns:repeat(16,1fr);
+      grid-template-rows:repeat(16,1fr);
+      gap:1px;
+      background:#000;
+    }
+    .px {
+      border:0; padding:0; margin:0; min-width:0; min-height:0; cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+  <script>
+  (function () {
+    var N = 256;
+    var START = 53;
+    var TID = 54;
+    var PAL = ["#121212", "#ececec", "#dc2028", "#ff7a18", "#ffd400", "#28c846", "#3dfff6", "#285ae6", "#ff2ea6"];
+    var KEY = "nftzworld-pix-" + TID;
+    var bits = [];
+    function seed(i) { return (i * 13 + START * 17) % PAL.length; }
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(bits)); } catch (e) {}
+    }
+    function load() {
+      try {
+        var raw = localStorage.getItem(KEY);
+        if (!raw) return null;
+        var arr = JSON.parse(raw);
+        if (!arr || arr.length !== N) return null;
+        return arr;
+      } catch (e) { return null; }
+    }
+    function paint(el, i) {
+      el.style.background = PAL[bits[i]];
+    }
+    var saved = load();
+    var grid = document.getElementById("grid");
+    var html = "";
+    for (var i = 0; i < N; i++) {
+      bits[i] = saved ? (arrSafe(saved[i])) : seed(i);
+      html += '<button type="button" class="px" id="p'+i+'"></button>';
+    }
+    grid.innerHTML = html;
+    function arrSafe(n) {
+      n = n | 0;
+      if (n < 0) return 0;
+      if (n >= PAL.length) return n % PAL.length;
+      return n;
+    }
+    for (var j = 0; j < N; j++) {
+      (function (i) {
+        var el = document.getElementById("p"+i);
+        paint(el, i);
+        el.onclick = function (ev) {
+          var dir = ev.shiftKey ? -1 : 1;
+          bits[i] = (bits[i] + dir + PAL.length) % PAL.length;
+          paint(el, i);
+          save();
+        };
+      })(j);
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NFTzWORLD CamShot BETA</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #050505; color: #ececec; font: 16px/1.4 Georgia, serif; }
+    body { display: grid; place-items: center; padding: 18px; }
+    .case {
+      width: min(440px, 100%);
+      background: #101010;
+      border: 3px solid #ccff00;
+      border-radius: 28px;
+      padding: 16px 16px 18px;
+      box-shadow: 0 0 0 8px #0a0a0a, 0 18px 50px rgba(0,0,0,.45);
+    }
+    .brand { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 2px 6px 12px; }
+    .brand b { color: #ccff00; font-weight: 400; letter-spacing: .08em; font-size: .78rem; }
+    .brand span { color: #fff; font-size: 1.35rem; }
+    .finder {
+      position: relative;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      border: 1px solid #2a2a2a;
+    }
+    video, img, .idle { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .idle { display: grid; place-items: center; color: #ccff00; letter-spacing: .16em; font-size: .85rem; }
+    .finder.off video { visibility: hidden; }
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 4px 4px; }
+    button {
+      font: inherit; background: #ccff00; color: #111; border: 0; border-radius: 999px;
+      padding: .7rem 1.3rem; cursor: pointer; letter-spacing: .06em;
+    }
+    button.stop { background: #111; color: #ccff00; border: 1px solid #ccff00; }
+    .count { color: #ccff00; letter-spacing: .14em; font-size: .8rem; }
+    .note { margin: 12px 4px 0; color: #bdbdbd; font-size: .92rem; }
+    #err { min-height: 1.3em; color: #ffb4c8; margin: 8px 4px 0; }
+  </style>
+</head>
+<body>
+  <div class="case">
+    <div class="brand">
+      <b>NFTzWORLD</b>
+      <span>CamShot BETA</span>
+    </div>
+    <div class="finder off" id="finder">
+      <div class="idle" id="idle">READY</div>
+      <video id="v" autoplay playsinline muted></video>
+      <img id="shot" alt="Saved shot" hidden>
+    </div>
+    <div class="bar">
+      <div class="count">1 / 1</div>
+      <button type="button" id="go">SHOOT</button>
+    </div>
+    <p class="note">Press SHOOT. The browser asks permission. Press STOP and the picture stays on this device. Nothing is uploaded. Nothing is recorded as video. No audio. OpenSea may refuse the camera. This is an opt-in test, not surveillance.</p>
+    <p id="err"></p>
+  </div>
+  <canvas id="c" hidden></canvas>
+  <script>
+    var KEY = "nftzworld-shot-1";
+    var stream = null;
+    var v = document.getElementById("v");
+    var img = document.getElementById("shot");
+    var idle = document.getElementById("idle");
+    var finder = document.getElementById("finder");
+    var go = document.getElementById("go");
+    var err = document.getElementById("err");
+    var canvas = document.getElementById("c");
+
+    function say(t) { err.textContent = t || ""; }
+
+    function showStill(url) {
+      img.src = url;
+      img.hidden = false;
+      idle.hidden = true;
+      finder.classList.add("off");
+    }
+
+    function saveFile() {
+      canvas.toBlob(function (blob) {
+        if (!blob) {
+          say("The picture is on screen. The file was not written.");
+          return;
+        }
+        var fileUrl = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = fileUrl;
+        a.download = "nftzworld-camshot.jpg";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(fileUrl); }, 1500);
+        say("Saved on this device as nftzworld-camshot.jpg. The camera is off.");
+      }, "image/jpeg", 0.86);
+    }
+
+    function keep(url) {
+      try { localStorage.setItem(KEY, url); }
+      catch (e) { say("The picture is on screen. This browser would not keep the copy for next time."); }
+      saveFile();
+    }
+
+    function snap() {
+      var w = v.videoWidth || 960;
+      var h = v.videoHeight || 720;
+      var max = 960;
+      if (w > max) { h = Math.round(h * max / w); w = max; }
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext("2d").drawImage(v, 0, 0, w, h);
+      return canvas.toDataURL("image/jpeg", 0.86);
+    }
+
+    function shut() {
+      if (stream) {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        stream = null;
+      }
+      v.srcObject = null;
+    }
+
+    try {
+      var saved = localStorage.getItem(KEY);
+      if (saved && saved.indexOf("data:image") === 0) showStill(saved);
+    } catch (e) {}
+
+    go.onclick = function () {
+      if (stream) {
+        var url = "";
+        try { url = snap(); } catch (e) { url = ""; }
+        shut();
+        go.textContent = "SHOOT";
+        go.classList.remove("stop");
+        if (url) {
+          showStill(url);
+          keep(url);
+          say("Saved on this device. The camera is off.");
+        } else {
+          say("Camera off. No frame was ready to save.");
+        }
+        return;
+      }
+      say("");
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        say("This frame cannot open a camera. Open the player as the top document.");
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(function (s) {
+        stream = s;
+        v.srcObject = s;
+        finder.classList.remove("off");
+        idle.hidden = true;
+        img.hidden = true;
+        go.textContent = "STOP";
+        go.classList.add("stop");
+        say("Camera on. Press STOP to keep one picture here.");
+      }).catch(function (e) {
+        say("Camera did not start. " + ((e && e.name) || "Error") + ": " + ((e && e.message) || "permission or no camera"));
+      });
+    };
+  </script>
+</body>
+</html>

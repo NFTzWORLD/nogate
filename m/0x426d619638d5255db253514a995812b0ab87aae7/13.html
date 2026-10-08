@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<!-- NFTzWORLD CALC. Working calculator. Shop https://x.com/NFTzWORLD. Robinhood 4663. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title></title>
+<style>
+  :root {
+    --body: #101010;
+    --body2: #1c1c1c;
+    --ink: #fff6d8;
+    --key: #2a2a2a;
+    --keyink: #fff8e8;
+    --op: #ffd24a;
+    --opink: #1a1404;
+    --lcd: #141208;
+    --digit: #fff1a8;
+    --accent: #ffd24a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; background: #050505; overflow: hidden;
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  body { display: flex; align-items: center; justify-content: center; }
+  .shell {
+    position: relative;
+    width: 100vmin; height: 100vmin; max-width: 100%; max-height: 100%;
+    display: flex; flex-direction: column; gap: 2.4%;
+    padding: 4.2% 4.6% 4.4%;
+    background: linear-gradient(165deg, var(--body2), var(--body) 42%);
+    color: var(--ink);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -10px 18px rgba(0,0,0,.28);
+  }
+  .shell:before {
+    content: ""; position: absolute; left: 0; top: 10%; bottom: 10%; width: 1.5%;
+    background: var(--accent); border-radius: 0 3px 3px 0;
+  }
+  .top { display: flex; justify-content: space-between; align-items: flex-end; padding-left: 2%; }
+  .brand { line-height: 1.05; }
+  .brand small {
+    display: block; letter-spacing: .28em; font-size: 2.1vmin;
+    font-family: ui-sans-serif, system-ui, sans-serif; opacity: .72;
+  }
+  .brand b {
+    display: block; font-size: 4.4vmin; letter-spacing: .16em; font-weight: 760;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  .chip {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 2.3vmin; letter-spacing: .14em;
+    border: 1px solid currentColor; border-radius: 999px;
+    padding: .35em .7em; opacity: .8;
+  }
+  .solar { display: flex; gap: 1.4%; height: 2.3vmin; padding-left: 2%; }
+  .solar i {
+    flex: 1; display: block; border-radius: 1px;
+    background: rgba(0,0,0,.38);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+  }
+  .lcd {
+    flex: 0 0 24%;
+    background: var(--lcd);
+    border-radius: 2.4%;
+    box-shadow: inset 0 3px 10px rgba(0,0,0,.72), inset 0 0 0 1px rgba(255,255,255,.05);
+    padding: 2.2% 3% 1.6%;
+    display: flex; flex-direction: column; position: relative;
+  }
+  .lcd-op {
+    min-height: 1.2em; color: var(--digit); opacity: .7;
+    font-family: ui-monospace, Menlo, monospace; font-size: 2.8vmin;
+  }
+  .lcd-num {
+    margin-top: auto; text-align: right; color: var(--digit);
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 8.2vmin; line-height: .95; letter-spacing: .01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .tools { display: flex; gap: 2%; margin-top: 1.6%; }
+  .tools button {
+    appearance: none; border: 0; border-radius: 8px;
+    background: rgba(255,255,255,.08); color: var(--digit);
+    font: 700 2.5vmin ui-sans-serif, system-ui, sans-serif;
+    padding: .28em .7em; cursor: pointer;
+  }
+  .tools button:active { transform: translateY(1px); background: rgba(255,255,255,.16); }
+  .keys {
+    flex: 1; display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 2.1%;
+  }
+  button.key {
+    appearance: none; border: 0; border-radius: 14%;
+    background: var(--key); color: var(--keyink);
+    font: 680 4.3vmin/1 ui-sans-serif, system-ui, sans-serif;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 2px 0 rgba(0,0,0,.4);
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  button.key:active { transform: translateY(1px); box-shadow: inset 0 2px 5px rgba(0,0,0,.45); }
+  button.op { background: var(--op); color: var(--opink); }
+  button.ac { font-size: 3.3vmin; letter-spacing: .06em; background: #4a2020; color: #ffc2c2; }
+  button.wide { grid-column: span 2; }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top">
+      <div class="brand"><small>NFTzWORLD</small><b>CALC</b></div>
+      <div class="chip">#13</div>
+    </div>
+    <div class="solar"><i></i><i></i><i></i><i></i></div>
+    <div class="lcd" id="lcd">
+      <div class="lcd-op" id="op"></div>
+      <div class="lcd-num" id="readout">88888888</div>
+      <div class="tools">
+        <button type="button" data-k="SQRT" aria-label="square root">√</button>
+        <button type="button" data-k="BS" aria-label="backspace">←</button>
+      </div>
+    </div>
+    <div class="keys">
+      <button type="button" class="key ac" data-k="AC">AC</button>
+      <button type="button" class="key" data-k="PM">±</button>
+      <button type="button" class="key" data-k="PCT">%</button>
+      <button type="button" class="key op" data-k="DIV">÷</button>
+      <button type="button" class="key" data-k="7">7</button>
+      <button type="button" class="key" data-k="8">8</button>
+      <button type="button" class="key" data-k="9">9</button>
+      <button type="button" class="key op" data-k="MUL">×</button>
+      <button type="button" class="key" data-k="4">4</button>
+      <button type="button" class="key" data-k="5">5</button>
+      <button type="button" class="key" data-k="6">6</button>
+      <button type="button" class="key op" data-k="SUB">−</button>
+      <button type="button" class="key" data-k="1">1</button>
+      <button type="button" class="key" data-k="2">2</button>
+      <button type="button" class="key" data-k="3">3</button>
+      <button type="button" class="key op" data-k="ADD">+</button>
+      <button type="button" class="key wide" data-k="0">0</button>
+      <button type="button" class="key" data-k="DOT">.</button>
+      <button type="button" class="key op" data-k="EQ">=</button>
+    </div>
+  </div>
+<script>
+/* NFTzWORLD CALC. Shop https://x.com/NFTzWORLD. Robinhood 4663. */
+var NFTzCalc = (function () {
+  var MAX_DIGITS = 12;
+
+  function tidyExp(s) {
+    return s
+      .replace(/(\.\d*?[1-9])0+(e[+-])/i, "$1$2")
+      .replace(/\.0+(e[+-])/i, "$1")
+      .replace("e+", "e");
+  }
+
+  function formatNum(n) {
+    if (!isFinite(n)) return "ERROR";
+    if (n === 0 || (typeof Object.is === "function" && Object.is(n, -0))) return "0";
+    var neg = n < 0;
+    var abs = Math.abs(n);
+    var rounded = Number(abs.toPrecision(10));
+    var s;
+    if (rounded >= 1e12 || (rounded > 0 && rounded < 1e-6)) {
+      s = tidyExp(rounded.toExponential(5));
+    } else {
+      s = String(rounded);
+      if (/e/i.test(s)) {
+        var fixed = rounded.toFixed(12).replace(/0+$/, "").replace(/\.$/, "");
+        s = fixed.length <= 12 ? fixed : tidyExp(s);
+      } else if (s.indexOf(".") !== -1) {
+        s = s.replace(/0+$/, "").replace(/\.$/, "");
+      }
+    }
+    if (neg) s = "-" + s;
+    if (s === "-0") s = "0";
+    if (s.length > 12) return "ERROR";
+    return s;
+  }
+
+  function create(boot) {
+    var b = boot == null || boot === "" ? "0" : String(boot);
+    return {
+      display: b,
+      acc: null,
+      op: null,
+      fresh: true,
+      err: false,
+      lastOp: null,
+      lastArg: null,
+      boot: b
+    };
+  }
+
+  function digitsOf(s) {
+    return String(s).replace(/[^0-9]/g, "").length;
+  }
+
+  function entry(state) {
+    if (state.err) return null;
+    var n = Number(state.display);
+    return isFinite(n) ? n : null;
+  }
+
+  function apply(a, op, b) {
+    if (op === "+") return a + b;
+    if (op === "-") return a - b;
+    if (op === "*") return a * b;
+    if (op === "/") {
+      if (b === 0) return NaN;
+      return a / b;
+    }
+    return b;
+  }
+
+  function show(state, n) {
+    var s = formatNum(n);
+    state.display = s;
+    state.err = s === "ERROR";
+    state.fresh = true;
+  }
+
+  function clearAll(state) {
+    var boot = state.boot;
+    var next = create("0");
+    next.boot = boot;
+    var k;
+    for (k in next) {
+      if (Object.prototype.hasOwnProperty.call(next, k)) state[k] = next[k];
+    }
+  }
+
+  function opOf(key) {
+    if (key === "ADD") return "+";
+    if (key === "SUB") return "-";
+    if (key === "MUL") return "*";
+    if (key === "DIV") return "/";
+    return null;
+  }
+
+  function press(state, key) {
+    key = String(key);
+    if (state.err && key !== "AC") return state;
+
+    if (key === "AC") {
+      clearAll(state);
+      return state;
+    }
+
+    if (/^[0-9]$/.test(key)) {
+      if (state.fresh || state.display === "0" || state.display === "ERROR") {
+        state.display = key;
+        state.fresh = false;
+        state.err = false;
+      } else if (digitsOf(state.display) < MAX_DIGITS) {
+        state.display += key;
+      }
+      return state;
+    }
+
+    if (key === "DOT") {
+      if (state.fresh || state.display === "ERROR") {
+        state.display = "0.";
+        state.fresh = false;
+        state.err = false;
+      } else if (state.display.indexOf(".") === -1) {
+        state.display += ".";
+      }
+      return state;
+    }
+
+    if (key === "BS") {
+      if (state.fresh) return state;
+      var d = state.display;
+      if (d.length <= 1 || (d.length === 2 && d.charAt(0) === "-")) state.display = "0";
+      else state.display = d.slice(0, -1);
+      if (state.display === "-" || state.display === "" || state.display === "-0") state.display = "0";
+      return state;
+    }
+
+    if (key === "PM") {
+      var pn = entry(state);
+      if (pn == null) return state;
+      if (state.fresh) {
+        show(state, -pn);
+        state.fresh = true;
+      } else if (state.display.charAt(0) === "-") {
+        state.display = state.display.slice(1) || "0";
+      } else if (state.display !== "0") {
+        state.display = "-" + state.display;
+      }
+      return state;
+    }
+
+    if (key === "PCT") {
+      var n = entry(state);
+      if (n == null) return state;
+      var v = n / 100;
+      if (state.acc != null && state.op) v = state.acc * (n / 100);
+      show(state, v);
+      return state;
+    }
+
+    if (key === "SQRT") {
+      var sn = entry(state);
+      if (sn == null) return state;
+      if (sn < 0) {
+        state.display = "ERROR";
+        state.err = true;
+        state.fresh = true;
+        return state;
+      }
+      show(state, Math.sqrt(sn));
+      return state;
+    }
+
+    var asOp = opOf(key);
+    if (asOp) {
+      var on = entry(state);
+      if (on == null) return state;
+      if (state.fresh && state.op && state.acc != null) {
+        state.op = asOp;
+        return state;
+      }
+      if (state.op && !state.fresh && state.acc != null) {
+        var chained = apply(state.acc, state.op, on);
+        show(state, chained);
+        if (state.err) return state;
+        state.acc = Number(state.display);
+      } else {
+        state.acc = on;
+      }
+      state.op = asOp;
+      state.fresh = true;
+      state.lastOp = null;
+      state.lastArg = null;
+      return state;
+    }
+
+    if (key === "EQ") {
+      var en = entry(state);
+      if (en == null) return state;
+      var op = state.op;
+      var arg = en;
+      var acc = state.acc;
+      if (op && acc != null) {
+        state.lastOp = op;
+        state.lastArg = en;
+      } else if (state.lastOp != null && state.lastArg != null) {
+        op = state.lastOp;
+        arg = state.lastArg;
+        acc = en;
+      } else {
+        show(state, en);
+        return state;
+      }
+      var result = apply(acc, op, arg);
+      show(state, result);
+      state.op = null;
+      state.acc = null;
+      return state;
+    }
+
+    return state;
+  }
+
+  return { create: create, press: press, formatNum: formatNum };
+})();
+
+var GLYPH = { "+": "+", "-": "−", "*": "×", "/": "÷" };
+var KEYS = {
+  "0": "0", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9",
+  ".": "DOT", "+": "ADD", "-": "SUB", "*": "MUL", "/": "DIV",
+  "Enter": "EQ", "=": "EQ", "Escape": "AC", "Backspace": "BS",
+  "%": "PCT", "s": "SQRT", "S": "SQRT", "n": "PM", "N": "PM", "c": "AC", "C": "AC"
+};
+var state = NFTzCalc.create("88888888");
+var readout = document.getElementById("readout");
+var opEl = document.getElementById("op");
+var actx = null;
+
+function render() {
+  readout.textContent = state.display;
+  opEl.textContent = state.op ? (GLYPH[state.op] || state.op) : "";
+}
+function beep() {
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    actx = actx || new AC();
+    var o = actx.createOscillator();
+    var g = actx.createGain();
+    o.type = "square";
+    o.frequency.value = 740;
+    g.gain.value = 0.025;
+    o.connect(g); g.connect(actx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + 0.035);
+    o.stop(actx.currentTime + 0.04);
+  } catch (e) {}
+}
+function hit(k) {
+  NFTzCalc.press(state, k);
+  render();
+  beep();
+}
+document.querySelectorAll("[data-k]").forEach(function (btn) {
+  btn.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    hit(btn.getAttribute("data-k"));
+  });
+});
+window.addEventListener("keydown", function (e) {
+  var k = KEYS[e.key];
+  if (!k) return;
+  e.preventDefault();
+  hit(k);
+});
+function fit() {
+  var s = document.querySelector(".shell");
+  var n = Math.min(window.innerWidth, window.innerHeight);
+  if (!n) return;
+  s.style.width = n + "px";
+  s.style.height = n + "px";
+}
+window.addEventListener("resize", fit);
+fit();
+render();
+
+if (new URLSearchParams(location.search).get("qa") === "1") {
+  var lines = [];
+  function run(keys) {
+    var s = NFTzCalc.create("0");
+    keys.forEach(function (k) { NFTzCalc.press(s, k); });
+    return s.display;
+  }
+  function check(name, keys, want) {
+    var got = run(keys);
+    lines.push((got === want ? "PASS" : "FAIL") + " " + name + " got=" + got + " want=" + want);
+  }
+  check("add", ["2", "ADD", "3", "EQ"], "5");
+  check("repeat", ["2", "ADD", "3", "EQ", "EQ", "EQ"], "11");
+  check("repeatmul", ["3", "MUL", "4", "EQ", "EQ"], "48");
+  check("mul", ["7", "MUL", "6", "EQ"], "42");
+  check("div", ["1", "0", "DIV", "4", "EQ"], "2.5");
+  check("div0", ["1", "DIV", "0", "EQ"], "ERROR");
+  check("ac", ["1", "DIV", "0", "EQ", "AC"], "0");
+  check("float", ["DOT", "1", "ADD", "DOT", "2", "EQ"], "0.3");
+  check("pct", ["2", "0", "0", "ADD", "1", "0", "PCT", "EQ"], "220");
+  check("pctalone", ["5", "0", "PCT"], "0.5");
+  check("sqrt", ["8", "1", "SQRT"], "9");
+  check("sqrt2", ["2", "SQRT"], "1.414213562");
+  check("sqrtneg", ["4", "PM", "SQRT"], "ERROR");
+  check("sign", ["5", "PM", "ADD", "2", "EQ"], "-3");
+  check("bs", ["1", "2", "BS"], "1");
+  check("chain", ["1", "0", "SUB", "3", "SUB", "2", "EQ"], "5");
+  check("opswap", ["2", "ADD", "MUL", "4", "EQ"], "8");
+  check("eqeq", ["5", "ADD", "EQ"], "10");
+  check("twelve", ["9", "9", "9", "9", "9", "9", "9", "9", "9", "9", "9", "ADD", "1", "EQ"], "100000000000");
+  var boot = NFTzCalc.create("4663");
+  NFTzCalc.press(boot, "8");
+  lines.push((boot.display === "8" ? "PASS" : "FAIL") + " boot got=" + boot.display + " want=8");
+  function tap(k) {
+    var el = document.querySelector('[data-k="' + k + '"]');
+    if (!el) { lines.push("FAIL missing " + k); return; }
+    el.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+  }
+  function expectDom(name, want) {
+    var got = readout.textContent;
+    lines.push((got === want ? "PASS" : "FAIL") + " DOM " + name + " got=" + got + " want=" + want);
+  }
+  tap("7");
+  expectDom("boot digit", "7");
+  tap("AC");
+  tap("1"); tap("2"); tap("3"); tap("ADD"); tap("4"); tap("5"); tap("6"); tap("EQ");
+  expectDom("123+456", "579");
+  tap("MUL"); tap("2"); tap("EQ");
+  expectDom("579*2", "1158");
+  tap("AC"); tap("9"); tap("SQRT");
+  expectDom("sqrt9", "3");
+  var pre = document.createElement("pre");
+  pre.id = "qa";
+  var fails = lines.filter(function (l) { return l.indexOf("FAIL") === 0; }).length;
+  pre.textContent = (fails ? "FAILED " + fails : "ALL PASS " + lines.length) + "\n" + lines.join("\n");
+  pre.style.cssText = "position:absolute;left:0;right:0;bottom:0;max-height:46%;overflow:auto;margin:0;background:#000;color:#ccff00;font:12px/1.35 ui-monospace,monospace;z-index:9;white-space:pre-wrap;padding:8px";
+  document.body.appendChild(pre);
+}
+</script>
+</body>
+</html>

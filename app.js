@@ -33,6 +33,7 @@
   ];
   let cfg = null;
   let catalog = [];
+  let mirrors = {};
   let provider = null;
   let signer = null;
   let account = "";
@@ -84,6 +85,14 @@
     const pat = PAGE_PLAY[String(addr || "").toLowerCase()];
     if (!pat) return "";
     return pat.replace("{id}", String(id));
+  }
+  function mirrorPlay(addr, id) {
+    const pat = mirrors[String(addr || "").toLowerCase()];
+    if (!pat) return "";
+    return pat.replace("{id}", String(id));
+  }
+  function knownPlay(addr, id) {
+    return pagePlay(addr, id) || mirrorPlay(addr, id);
   }
   function httpsUrl(raw) {
     if (!raw || typeof raw !== "string") return "";
@@ -280,12 +289,14 @@
   }
 
   async function boot() {
-    const [c, cat] = await Promise.all([
+    const [c, cat, mir] = await Promise.all([
       fetch("config.json", { cache: "no-store" }).then((r) => r.json()),
       fetch("catalog.json", { cache: "no-store" }).then((r) => r.json()),
+      fetch("mirrors.json", { cache: "no-store" }).then((r) => (r.ok ? r.json() : {})),
     ]);
     cfg = c;
     catalog = cat;
+    mirrors = mir || {};
     provider = new ethers.JsonRpcProvider(cfg.rpc, cfg.chainId, { staticNetwork: true, batchMaxCount: 40 });
     $("btnConnect").addEventListener("click", connect);
     let savedSize = "desk";
@@ -850,6 +861,14 @@
       ownerP.textContent = errText(e);
     });
 
+    const known = cfg.pages ? knownPlay(item.address, id) : "";
+    if (known) {
+      const play = el("button", { type: "button", class: "solid", text: "Play" });
+      play.addEventListener("click", () => openApp(known, item.name + " #" + id, gen));
+      side.insertBefore(play, side.firstChild);
+      openApp(known, item.name + " #" + id, gen);
+    }
+
     metaOf(item.address, id).then((meta) => {
       if (gen !== viewGen) return;
       if (meta.name) title.textContent = meta.name;
@@ -869,6 +888,7 @@
         side.append(ul);
       }
       const anim = httpsUrl(meta.animation_url);
+      if (known) return;
       if (anim) {
         const play = el("button", { type: "button", class: "solid", text: "Play" });
         play.addEventListener("click", () => openApp(anim, meta.name || ("Token " + id), gen));
@@ -892,7 +912,7 @@
       pic.src = img;
       frame.replaceChildren(pic);
     }).catch((e) => {
-      if (gen !== viewGen) return;
+      if (gen !== viewGen || known) return;
       const fallback = pagePlay(item.address, id);
       if (cfg.pages && fallback) {
         const play = el("button", { type: "button", class: "solid", text: "Play" });
@@ -900,6 +920,10 @@
         side.insertBefore(play, side.firstChild);
         openApp(fallback, item.name + " #" + id, gen);
         log("Opening the page copy.");
+        return;
+      }
+      if (cfg.pages) {
+        log("This one is not on the page yet.");
         return;
       }
       log(errText(e));
@@ -931,7 +955,7 @@
         const view = document.createElement("iframe");
         view.title = name;
         view.setAttribute("sandbox", "allow-scripts allow-forms allow-modals allow-pointer-lock");
-        view.setAttribute("allow", "fullscreen");
+        view.setAttribute("allow", "fullscreen; autoplay");
         view.referrerPolicy = "no-referrer";
         view.src = anim;
         frame.replaceChildren(view);

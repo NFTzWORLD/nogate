@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<!-- NFTzWORLD AMP · TONE edition 1. Twelve-key synthesizer. Shop https://x.com/NFTzWORLD. Robinhood 4663. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title></title>
+<style>
+  :root { --body:#161616; --body2:#2a2a2a; --ink:#f4f4f4; --accent:#ccff00; --hot:#39ff6a; --lcd:#070707; --digit:#ccff00; --meter:#141414; --cheeks:#6b3a1f; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; background:#050505; overflow:hidden; user-select:none; touch-action:manipulation; }
+  body { display:flex; align-items:center; justify-content:center; }
+  .shell { position:relative; width:100vmin; height:100vmin; background:#050505; color:var(--ink); }
+  .shell[data-cheeks="1"] { background:var(--cheeks); }
+  .face {
+    position:absolute; inset:4%;
+    display:flex; flex-direction:column; gap:1.3%;
+    padding:2.6% 3% 2.2%;
+    background:linear-gradient(180deg, var(--body2), var(--body) 16%, var(--body));
+    border-radius:3%;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.28), inset 0 -8px 14px rgba(0,0,0,.25);
+  }
+  .shell[data-rack="1"]:not([data-cheeks="1"]) .face { inset:4% 6.2%; }
+  .shell[data-rack="1"]:not([data-cheeks="1"])::before,
+  .shell[data-rack="1"]:not([data-cheeks="1"])::after {
+    content:""; position:absolute; top:9%; bottom:9%; width:2.1%;
+    background:linear-gradient(90deg,#333,#111); border-radius:2px;
+  }
+  .shell[data-rack="1"]:not([data-cheeks="1"])::before { left:1.5%; }
+  .shell[data-rack="1"]:not([data-cheeks="1"])::after { right:1.5%; }
+  .top { display:flex; align-items:flex-start; gap:2%; }
+  .brand small { display:block; letter-spacing:.22em; font:600 1.5vmin/1 ui-sans-serif,system-ui,sans-serif; opacity:.65; }
+  .brand b { display:block; margin-top:.25vmin; color:var(--accent); letter-spacing:.16em; font:700 1.6vmin/1 ui-sans-serif,system-ui,sans-serif; }
+  .brand strong { display:block; font:760 4.2vmin/.9 ui-sans-serif,system-ui,sans-serif; }
+  .year { font:600 1.6vmin/1 ui-monospace,Menlo,monospace; opacity:.7; }
+  .pilots { display:flex; gap:1vmin; margin-left:auto; align-items:center; }
+  .pilot { width:2vmin; height:2vmin; border-radius:50%; background:#222; }
+  #power { background:var(--hot); box-shadow:0 0 8px var(--hot); }
+  #sig.on { background:var(--accent); box-shadow:0 0 8px var(--accent); }
+  .chip { font:600 1.9vmin/1 ui-monospace,Menlo,monospace; border:1px solid currentColor; border-radius:999px; padding:.3em .6em; }
+  .panel { display:flex; gap:2%; min-height:16%; }
+  .scope {
+    flex:0 0 38%; background:var(--meter); border-radius:8px;
+    box-shadow:inset 0 2px 8px rgba(0,0,0,.4); padding:4% 4% 2%;
+  }
+  .scope svg { width:100%; height:70%; }
+  #trace { fill:none; stroke:var(--accent); stroke-width:2; }
+  .readout {
+    flex:1; background:var(--lcd); color:var(--digit); border-radius:8px;
+    box-shadow:inset 0 3px 8px rgba(0,0,0,.6);
+    display:flex; align-items:center; padding:0 4%;
+    font:700 3.2vmin/1 ui-monospace,Menlo,monospace; letter-spacing:.04em;
+  }
+  .knobs { display:flex; justify-content:space-between; padding:0 1%; }
+  .knobbox { display:flex; flex-direction:column; align-items:center; gap:.3vmin; width:16%; }
+  .knobbox b { font:700 1.4vmin/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.08em; opacity:.75; }
+  .knob {
+    width:5.4vmin; height:5.4vmin; border:0; border-radius:50%; cursor:pointer;
+    background:radial-gradient(circle at 35% 30%, #5a5a5a, #111 68%);
+    position:relative;
+  }
+  .knob::after {
+    content:""; position:absolute; left:50%; top:10%; width:2px; height:36%; margin-left:-1px;
+    background:var(--accent);
+  }
+  .switches { display:flex; align-items:center; gap:1.4%; }
+  .switches button {
+    appearance:none; border:0; cursor:pointer; color:#f4f4f4; background:#1c1c1c;
+    border-radius:7px; font:750 1.7vmin/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.08em;
+    padding:1.2% 0; flex:1;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 2px 0 rgba(0,0,0,.4);
+  }
+  .switches button.on { background:var(--accent); color:#141414; }
+  #oct { width:8%; text-align:center; font:700 2.4vmin/1 ui-monospace,Menlo,monospace; }
+  .wlamps { display:flex; flex-direction:column; gap:.4vmin; width:3%; }
+  .wlamps i { display:block; height:1.1vmin; border-radius:99px; background:rgba(255,255,255,.15); }
+  .wlamps i.on { background:var(--accent); box-shadow:0 0 5px var(--accent); }
+  .leds { display:grid; grid-template-columns:repeat(12,1fr); gap:1.2%; padding:0 2%; }
+  .leds i { height:1.15vmin; border-radius:99px; background:rgba(0,0,0,.35); }
+  .leds i.on { background:var(--accent); box-shadow:0 0 6px var(--accent); }
+  .board { position:relative; flex:1; display:flex; gap:1.1%; min-height:0; }
+  .white {
+    flex:1; appearance:none; border:0; cursor:pointer; color:#222;
+    background:linear-gradient(#fbfaf7, #d8d3cb);
+    border-radius:0 0 10% 10%;
+    box-shadow:inset 0 -1.1vmin 0 rgba(0,0,0,.16), 0 .4vmin 0 #111;
+    font:700 1.6vmin/1 ui-sans-serif,system-ui,sans-serif;
+    display:flex; align-items:flex-end; justify-content:center; padding-bottom:7%;
+  }
+  .white.on { background:linear-gradient(var(--accent), #f4f1ea 55%); }
+  .blacks { position:absolute; left:0; right:0; top:0; height:58%; pointer-events:none; }
+  .black {
+    pointer-events:auto; position:absolute; top:0; width:8.2%; height:100%;
+    appearance:none; border:0; cursor:pointer;
+    background:linear-gradient(#3a3a3a, #0c0c0c);
+    border-radius:0 0 8px 8px;
+    box-shadow:0 .35vmin 0 #000;
+  }
+  .black.on { box-shadow:0 0 10px var(--accent), 0 .35vmin 0 #000; outline:2px solid var(--accent); }
+</style>
+</head>
+<body>
+  <div class="shell" id="shell">
+    <div class="face">
+      <div class="top">
+        <div class="brand"><small>NFTzWORLD</small><b>AMP</b><strong id="model">TONE</strong><div class="year" id="year"></div></div>
+        <div class="pilots"><i id="power" class="pilot"></i><i id="sig" class="pilot"></i></div>
+        <div class="chip" id="chip">#000</div>
+      </div>
+      <div class="panel">
+        <div class="scope"><svg viewBox="0 0 100 40" preserveAspectRatio="none"><polyline id="trace" points="0,30 24,8 24,30 48,8 48,30 72,8 72,30 100,8"></polyline></svg></div>
+        <div class="readout" id="readout">C4  SAW</div>
+      </div>
+      <div class="knobs" id="knobs"></div>
+      <div class="switches">
+        <button type="button" id="wave">WAVE</button>
+        <div class="wlamps" id="wlamps"><i></i><i></i><i></i></div>
+        <button type="button" id="octDown">OCT-</button>
+        <div id="oct">0</div>
+        <button type="button" id="octUp">OCT+</button>
+        <button type="button" id="dual">DUAL</button>
+        <button type="button" id="vib">VIB</button>
+      </div>
+      <div class="leds" id="leds"></div>
+      <div class="board" id="board"></div>
+    </div>
+  </div>
+<script>
+/* NFTzWORLD AMP · TONE edition 1. Shop https://x.com/NFTzWORLD. */
+var NFTzTone = (function () {
+  var NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  var WAVES = ["sawtooth", "square", "triangle"];
+  var WAVE_NAMES = ["SAW", "SQUARE", "TRI"];
+
+  function create(kit) {
+    return {
+      wave: kit.wave | 0,
+      octave: kit.octave | 0,
+      cutoff: +kit.cutoff,
+      res: +kit.res,
+      attack: +kit.attack,
+      release: +kit.release,
+      tune: +kit.tune,
+      dual: !!kit.dual,
+      vib: !!kit.vib,
+      home: kit.home | 0,
+      last: kit.home | 0,
+      gate: false
+    };
+  }
+
+  function midi(state, key) {
+    var semis = Math.round((state.tune - 0.5) * 8);
+    return 60 + state.octave * 12 + key + semis;
+  }
+
+  function freq(m) {
+    return 440 * Math.pow(2, (m - 69) / 12);
+  }
+
+  function cutoffHz(v) {
+    return Math.round(180 * Math.pow(40, v));
+  }
+
+  function attackSec(v) {
+    return 0.008 + v * 0.32;
+  }
+
+  function releaseSec(v) {
+    return 0.08 + v * 1.35;
+  }
+
+  return {
+    NOTES: NOTES,
+    WAVES: WAVES,
+    WAVE_NAMES: WAVE_NAMES,
+    create: create,
+    midi: midi,
+    freq: freq,
+    cutoffHz: cutoffHz,
+    attackSec: attackSec,
+    releaseSec: releaseSec
+  };
+})();
+
+var KIT = {"id": 148, "slug": "boutique-tri-148", "title": "BOUTIQUE \u00b7 TRI D5", "room": "Boutique", "room_id": "boutique", "year": "2020", "groove": "TRI", "wave": 2, "octave": 1, "home": 2, "note": "D5", "cutoff": 0.38, "res": 0.64, "attack": 0.14, "release": 0.12, "tune": 0.25, "dual": true, "vib": false, "bpm": 731, "color": "Boutique", "accent": "#ff2a3a", "body": "#141414", "body2": "#242424", "ink": "#f6f6f6", "hot": "#ff5a68", "lcd": "#10080a", "digit": "#ff8a96", "meter": "#1a1012", "cheeks": "#7a1824", "rack": 1, "emotion": "Tri", "shape": "Keys", "size": "Twelve", "set": "AMP", "edition": "1", "hint": "Edition 1. 2020 Boutique. Twelve keys, tri wave, home note D5. Cutoff, resonance, attack, release, tune, dual, and vibrato. Later editions grow the keyboard."};
+/* AMP TONE edition 1. Twelve keys. KIT is baked above this script. */
+var state = NFTzTone.create(KIT);
+var actx = null;
+var master = null;
+var lfo = null;
+var active = {};
+var born = [];
+
+var WHITE = [0, 2, 4, 5, 7, 9, 11];
+var BLACK = [1, 3, 6, 8, 10];
+var KEYS = {
+  "a": 0, "w": 1, "s": 2, "e": 3, "d": 4, "f": 5, "t": 6, "g": 7, "y": 8, "h": 9, "u": 10, "j": 11,
+  "A": 0, "W": 1, "S": 2, "E": 3, "D": 4, "F": 5, "T": 6, "G": 7, "Y": 8, "H": 9, "U": 10, "J": 11
+};
+var down = {};
+
+function paintChrome() {
+  var shell = document.querySelector(".shell");
+  ["body", "body2", "ink", "accent", "hot", "lcd", "digit", "meter", "cheeks"].forEach(function (k) {
+    if (KIT[k]) shell.style.setProperty("--" + k, KIT[k]);
+  });
+  shell.dataset.rack = KIT.rack ? "1" : "0";
+  shell.dataset.cheeks = KIT.cheeks ? "1" : "0";
+  document.getElementById("model").textContent = String(KIT.room).toUpperCase();
+  document.getElementById("year").textContent = KIT.year;
+  document.getElementById("chip").textContent = "#" + String(KIT.id).padStart(3, "0");
+  var knobs = document.getElementById("knobs");
+  [
+    ["cutoff", "CUT"],
+    ["res", "RES"],
+    ["attack", "ATK"],
+    ["release", "REL"],
+    ["tune", "TUNE"]
+  ].forEach(function (spec) {
+    var wrap = document.createElement("div");
+    wrap.className = "knobbox";
+    var el = document.createElement("button");
+    el.type = "button";
+    el.className = "knob";
+    el.dataset.knob = spec[0];
+    var cap = document.createElement("b");
+    cap.textContent = spec[1];
+    wrap.appendChild(el);
+    wrap.appendChild(cap);
+    knobs.appendChild(wrap);
+    bindKnob(el, spec[0]);
+  });
+  var leds = document.getElementById("leds");
+  for (var i = 0; i < 12; i++) {
+    var lamp = document.createElement("i");
+    lamp.dataset.led = String(i);
+    leds.appendChild(lamp);
+  }
+  var board = document.getElementById("board");
+  WHITE.forEach(function (k) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "white";
+    b.dataset.key = String(k);
+    b.textContent = NFTzTone.NOTES[k];
+    board.appendChild(b);
+    bindKey(b, k);
+  });
+  var blacks = document.createElement("div");
+  blacks.className = "blacks";
+  BLACK.forEach(function (k) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "black";
+    b.dataset.key = String(k);
+    var slot = { 1: 0, 3: 1, 6: 3, 8: 4, 10: 5 }[k];
+    b.style.left = "calc(" + (slot + 1) + " * (100% / 7) - 4.3%)";
+    blacks.appendChild(b);
+    bindKey(b, k);
+  });
+  board.appendChild(blacks);
+  document.getElementById("dual").classList.toggle("on", state.dual);
+  document.getElementById("vib").classList.toggle("on", state.vib);
+}
+
+function bindKnob(el, name) {
+  el.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    var startY = e.clientY;
+    var start = state[name];
+    function move(ev) {
+      var next = start + (startY - ev.clientY) / 140;
+      state[name] = Math.max(0, Math.min(1, next));
+      render();
+    }
+    function up() {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  });
+}
+
+function bindKey(el, key) {
+  function on(e) {
+    e.preventDefault();
+    noteOn(key);
+  }
+  function off(e) {
+    if (e) e.preventDefault();
+    noteOff(key);
+  }
+  el.addEventListener("pointerdown", on);
+  el.addEventListener("pointerup", off);
+  el.addEventListener("pointercancel", off);
+  el.addEventListener("pointerleave", function (e) {
+    if (e.buttons) off(e);
+  });
+}
+
+function ensure() {
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return false;
+  if (!actx) {
+    actx = new AC();
+    master = actx.createGain();
+    master.gain.value = 0.42;
+    var comp = actx.createDynamicsCompressor();
+    comp.threshold.value = -12;
+    comp.ratio.value = 3;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.18;
+    master.connect(comp);
+    comp.connect(actx.destination);
+    lfo = actx.createOscillator();
+    lfo.frequency.value = 5.5;
+    var lfoGain = actx.createGain();
+    lfoGain.gain.value = 6;
+    lfo.connect(lfoGain);
+    lfo.start();
+    actx._lfoGain = lfoGain;
+  }
+  if (actx.state === "suspended") actx.resume();
+  return true;
+}
+
+function noteOn(key) {
+  if (active[key]) noteOff(key);
+  state.last = key;
+  state.gate = true;
+  try {
+    if (!ensure()) { render(); return; }
+    var t = actx.currentTime;
+    var m = NFTzTone.midi(state, key);
+    var f = NFTzTone.freq(m);
+    var type = NFTzTone.WAVES[state.wave] || "sawtooth";
+    var osc = actx.createOscillator();
+    osc.type = type;
+    osc.frequency.setValueAtTime(f, t);
+    var osc2 = null;
+    if (state.dual) {
+      osc2 = actx.createOscillator();
+      osc2.type = type;
+      osc2.frequency.setValueAtTime(f * 1.007, t);
+    }
+    if (state.vib && actx._lfoGain) {
+      actx._lfoGain.connect(osc.frequency);
+      if (osc2) actx._lfoGain.connect(osc2.frequency);
+    }
+    var filter = actx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(NFTzTone.cutoffHz(state.cutoff), t);
+    filter.Q.value = 0.7 + state.res * 12;
+    var g = actx.createGain();
+    var peak = state.dual ? 0.16 : 0.22;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + NFTzTone.attackSec(state.attack));
+    osc.connect(filter);
+    if (osc2) osc2.connect(filter);
+    filter.connect(g);
+    g.connect(master);
+    osc.start(t);
+    if (osc2) osc2.start(t);
+    active[key] = { osc: osc, osc2: osc2, g: g, filter: filter };
+    born.push(key);
+    while (born.length > 8) noteOff(born.shift());
+  } catch (e) {}
+  render();
+}
+
+function noteOff(key) {
+  var v = active[key];
+  if (!v) {
+    state.gate = Object.keys(active).length > 0;
+    render();
+    return;
+  }
+  delete active[key];
+  try {
+    var t = actx.currentTime;
+    var rel = NFTzTone.releaseSec(state.release);
+    v.g.gain.cancelScheduledValues(t);
+    var now = Math.max(0.0001, v.g.gain.value || 0.0001);
+    v.g.gain.setValueAtTime(now, t);
+    v.g.gain.exponentialRampToValueAtTime(0.0001, t + rel);
+    v.osc.stop(t + rel + 0.03);
+    if (v.osc2) v.osc2.stop(t + rel + 0.03);
+  } catch (e) {}
+  state.gate = Object.keys(active).length > 0;
+  render();
+}
+
+function render() {
+  document.querySelectorAll(".knob").forEach(function (el) {
+    var name = el.dataset.knob;
+    var v = state[name];
+    var ang = -135 + v * 270;
+    el.style.transform = "rotate(" + ang + "deg)";
+  });
+  document.querySelectorAll("[data-key]").forEach(function (el) {
+    el.classList.toggle("on", !!active[el.dataset.key] || (!state.gate && Number(el.dataset.key) === state.last && Object.keys(active).length === 0 && false));
+    el.classList.toggle("on", !!active[el.dataset.key]);
+  });
+  document.querySelectorAll("#leds i").forEach(function (el) {
+    var n = Number(el.dataset.led);
+    el.classList.toggle("on", !!active[n] || (Object.keys(active).length === 0 && n === state.home && n === state.last));
+  });
+  // Home lamp stays visible until you play, then the held keys take over.
+  if (Object.keys(active).length === 0) {
+    document.querySelectorAll("#leds i").forEach(function (el) {
+      el.classList.toggle("on", Number(el.dataset.led) === state.home);
+    });
+    document.querySelectorAll("[data-key]").forEach(function (el) {
+      el.classList.toggle("on", Number(el.dataset.key) === state.home);
+    });
+  }
+  var names = NFTzTone.WAVE_NAMES;
+  document.querySelectorAll("#wlamps i").forEach(function (el, idx) {
+    el.classList.toggle("on", idx === state.wave);
+  });
+  document.getElementById("oct").textContent = (state.octave > 0 ? "+" : "") + state.octave;
+  document.getElementById("dual").classList.toggle("on", state.dual);
+  document.getElementById("vib").classList.toggle("on", state.vib);
+  var gate = document.getElementById("sig");
+  if (gate) gate.classList.toggle("on", state.gate || Object.keys(active).length > 0);
+  var note = NFTzTone.NOTES[state.last] + (4 + state.octave);
+  document.getElementById("readout").textContent = note + "  " + names[state.wave] + "  " + NFTzTone.cutoffHz(state.cutoff);
+  var trace = document.getElementById("trace");
+  if (trace) {
+    var pts = [
+      "0,30 24,8 24,30 48,8 48,30 72,8 72,30 100,8",
+      "0,28 0,10 50,10 50,28 100,28",
+      "0,30 25,8 50,30 75,8 100,30"
+    ];
+    trace.setAttribute("points", pts[state.wave] || pts[0]);
+  }
+}
+
+document.getElementById("wave").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  state.wave = (state.wave + 1) % 3;
+  render();
+});
+document.getElementById("octDown").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  state.octave = Math.max(-2, state.octave - 1);
+  render();
+});
+document.getElementById("octUp").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  state.octave = Math.min(2, state.octave + 1);
+  render();
+});
+document.getElementById("dual").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  state.dual = !state.dual;
+  render();
+});
+document.getElementById("vib").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  state.vib = !state.vib;
+  render();
+});
+
+window.addEventListener("keydown", function (e) {
+  if (e.repeat || down[e.key]) return;
+  var key = KEYS[e.key];
+  if (key == null) return;
+  e.preventDefault();
+  down[e.key] = true;
+  noteOn(key);
+});
+window.addEventListener("keyup", function (e) {
+  var key = KEYS[e.key];
+  if (key == null) return;
+  e.preventDefault();
+  down[e.key] = false;
+  noteOff(key);
+});
+
+function fit() {
+  var s = document.querySelector(".shell");
+  var n = Math.min(window.innerWidth, window.innerHeight);
+  if (!n) return;
+  s.style.width = n + "px";
+  s.style.height = n + "px";
+}
+window.addEventListener("resize", fit);
+paintChrome();
+fit();
+render();
+
+if (new URLSearchParams(location.search).get("qa") === "1") {
+  var lines = [];
+  function check(name, ok, extra) {
+    lines.push((ok ? "PASS" : "FAIL") + " " + name + (extra ? " " + extra : ""));
+  }
+  check("freq", Math.abs(NFTzTone.freq(69) - 440) < 0.01, String(NFTzTone.freq(69)));
+  check("twelve", document.querySelectorAll("[data-key]").length === 12);
+  check("home-lamp", document.querySelector('#leds i[data-led="' + KIT.home + '"]').classList.contains("on"));
+  var before = state.wave;
+  document.getElementById("wave").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+  check("wave", state.wave === (before + 1) % 3);
+  var oct = state.octave;
+  document.getElementById("octUp").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+  check("octave", state.octave === Math.min(2, oct + 1));
+  noteOn(0);
+  check("key", state.last === 0 && !!active[0]);
+  noteOff(0);
+  check("release", !active[0]);
+  var pre = document.createElement("pre");
+  pre.id = "qa";
+  var fails = lines.filter(function (l) { return l.indexOf("FAIL") === 0; }).length;
+  pre.textContent = (fails ? "FAILED " + fails : "ALL PASS " + lines.length) + "\n" + lines.join("\n");
+  pre.style.cssText = "position:absolute;left:0;right:0;bottom:0;max-height:40%;overflow:auto;margin:0;background:#000;color:#ccff00;font:12px/1.35 ui-monospace,monospace;z-index:9;white-space:pre-wrap;padding:8px";
+  document.body.appendChild(pre);
+}
+
+</script>
+</body>
+</html>

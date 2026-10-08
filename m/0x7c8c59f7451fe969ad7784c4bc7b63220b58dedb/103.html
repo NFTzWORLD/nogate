@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <title></title>
+  <style>
+    html,body { margin:0; height:100%; background:#050506; overflow:hidden; user-select:none; touch-action:manipulation; }
+    #board {
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 50% 50%, #1a1a1e 0%, #050506 100%);
+    }
+    #grid {
+      position:absolute; inset:5%;
+      display:grid;
+      grid-template-columns:repeat(16,1fr);
+      grid-template-rows:repeat(16,1fr);
+      gap:2.4%;
+    }
+    .peg {
+      border:0; padding:0; cursor:pointer;
+      width:52%;
+      aspect-ratio:1;
+      height:auto;
+      margin:auto;
+      align-self:center;
+      justify-self:center;
+      border-radius:50%;
+      background:#111114;
+      box-shadow: inset 0 0 0 1px #070708;
+    }
+  </style>
+</head>
+<body>
+  <div id="board"></div>
+  <div id="grid"></div>
+  <script>
+  (function () {
+    var N = 256;
+    var START = 102;
+    var TID = 103;
+    var PAL = ["#111114", "#ffffff", "#ff0040", "#ff5a00", "#ffff00", "#39ff14", "#00ffff", "#4d7cff", "#ff00aa"];
+    var GLOW = ["inset 0 0 0 1px #070708", "0 0 6px #fff, 0 0 16px #fff", "0 0 6px #ff0040, 0 0 18px #ff0040", "0 0 6px #ff5a00, 0 0 18px #ff5a00", "0 0 6px #ffff00, 0 0 18px #ffff00", "0 0 6px #39ff14, 0 0 18px #39ff14", "0 0 6px #00ffff, 0 0 18px #00ffff", "0 0 6px #4d7cff, 0 0 18px #4d7cff", "0 0 6px #ff00aa, 0 0 18px #ff00aa"];
+    var KEY = "nftzworld-brite-" + TID;
+    var bits = [];
+    function seed(i) { return (i * 13 + START * 17) % PAL.length; }
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(bits)); } catch (e) {}
+    }
+    function load() {
+      try {
+        var raw = localStorage.getItem(KEY);
+        if (!raw) return null;
+        var arr = JSON.parse(raw);
+        if (!arr || arr.length !== N) return null;
+        return arr;
+      } catch (e) { return null; }
+    }
+    function arrSafe(n) {
+      n = n | 0;
+      if (n < 0) return 0;
+      if (n >= PAL.length) return n % PAL.length;
+      return n;
+    }
+    function paint(el, i) {
+      el.style.background = PAL[bits[i]];
+      el.style.boxShadow = GLOW[bits[i]];
+    }
+    var saved = load();
+    var grid = document.getElementById("grid");
+    var html = "";
+    for (var i = 0; i < N; i++) {
+      bits[i] = saved ? arrSafe(saved[i]) : seed(i);
+      html += '<button type="button" class="peg" id="p'+i+'"></button>';
+    }
+    grid.innerHTML = html;
+    for (var j = 0; j < N; j++) {
+      (function (i) {
+        var el = document.getElementById("p"+i);
+        paint(el, i);
+        el.onclick = function (ev) {
+          var dir = ev.shiftKey ? -1 : 1;
+          bits[i] = (bits[i] + dir + PAL.length) % PAL.length;
+          paint(el, i);
+          save();
+        };
+      })(j);
+    }
+  })();
+  </script>
+</body>
+</html>

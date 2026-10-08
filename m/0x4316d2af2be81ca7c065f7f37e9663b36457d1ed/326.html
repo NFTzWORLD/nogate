@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<!-- NFTzWORLD AMP · PAD. Working drum pad. Shop https://x.com/NFTzWORLD. Robinhood 4663. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title></title>
+<style>
+  :root {
+    --body: #161616; --body2: #262626; --ink: #f4f4f4;
+    --accent: #ccff00; --lcd: #10140c; --digit: #ccff00;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; background: #050505; overflow: hidden;
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  body { display: flex; align-items: center; justify-content: center; }
+  .shell {
+    position: relative; width: 100vmin; height: 100vmin; max-width: 100%; max-height: 100%;
+    display: flex; flex-direction: column; gap: 1.6%;
+    padding: 3.6% 4.2% 3.4%;
+    background: linear-gradient(165deg, var(--body2), var(--body) 46%);
+    color: var(--ink);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -12px 20px rgba(0,0,0,.28);
+  }
+  .shell:before {
+    content: ""; position: absolute; left: 0; top: 8%; bottom: 8%; width: 1.5%;
+    background: var(--accent);
+  }
+  .top { display: flex; justify-content: space-between; align-items: flex-end; padding-left: 1.5%; }
+  .brand small {
+    display: block; letter-spacing: .28em; font-size: 1.8vmin; opacity: .7;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  .brand b {
+    display: block; font-size: 2.2vmin; letter-spacing: .16em; font-weight: 700;
+    color: var(--accent); font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  .brand strong {
+    display: block; font-size: 5.4vmin; letter-spacing: .12em; line-height: .9;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  .chip {
+    font-family: ui-monospace, Menlo, monospace; font-size: 2.2vmin; letter-spacing: .12em;
+    border: 1px solid currentColor; border-radius: 999px; padding: .35em .7em; opacity: .8;
+  }
+  .lcd {
+    background: var(--lcd); border-radius: 2.2%;
+    box-shadow: inset 0 3px 10px rgba(0,0,0,.7);
+    padding: 1.6% 2.4% 1.4%;
+  }
+  .lcd-top { display: flex; justify-content: space-between; align-items: baseline; color: var(--digit); }
+  #bpm { font: 700 5.6vmin/1 ui-monospace, Menlo, monospace; letter-spacing: .04em; }
+  #groove { font: 650 2.4vmin/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .22em; opacity: .85; }
+  .steps { display: grid; grid-template-columns: repeat(16, 1fr); gap: 1.2%; margin-top: 1.4%; }
+  .lamp {
+    appearance: none; border: 0; height: 1.7vmin; border-radius: 999px; padding: 0;
+    background: rgba(255,255,255,.08); cursor: pointer;
+  }
+  .lamp.beat { background: rgba(255,255,255,.28); }
+  .lamp.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .pads {
+    flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 2%;
+  }
+  .pad {
+    appearance: none; border: 0; border-radius: 16%; cursor: pointer;
+    font: 700 2.15vmin/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .08em;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 0.55vmin 0 rgba(0,0,0,.38);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pad.hit { transform: translateY(0.35vmin); box-shadow: inset 0 2px 5px rgba(0,0,0,.45); }
+  .pad.on { outline: 2px solid var(--accent); outline-offset: -3px; box-shadow: 0 0 12px var(--accent), inset 0 1px 0 rgba(255,255,255,.28); }
+  .transport { display: flex; gap: 2%; align-items: center; }
+  .transport button {
+    appearance: none; border: 0; border-radius: 10px; cursor: pointer;
+    background: #1a1a1a; color: var(--ink);
+    font: 750 2.3vmin/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .14em;
+    padding: 1.6% 0; flex: 1;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 2px 0 rgba(0,0,0,.4);
+  }
+  #play.go { background: var(--accent); color: #141414; }
+  #swing { font: 600 1.8vmin/1 ui-monospace, Menlo, monospace; opacity: .7; letter-spacing: .08em; width: 22%; text-align: right; }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top">
+      <div class="brand"><small>NFTzWORLD</small><b>AMP</b><strong>PAD</strong></div>
+      <div class="chip" id="chip">#000</div>
+    </div>
+    <div class="lcd">
+      <div class="lcd-top"><div id="bpm">0</div><div id="groove">----</div></div>
+      <div class="steps" id="steps"></div>
+    </div>
+    <div class="pads" id="pads"></div>
+    <div class="transport">
+      <button type="button" id="play">PLAY</button>
+      <button type="button" id="clear">CLEAR</button>
+      <div id="swing"></div>
+    </div>
+  </div>
+<script>
+/* NFTzWORLD AMP · PAD. Shop https://x.com/NFTzWORLD. */
+var NFTzPad = (function () {
+  function create(kit) {
+    var home = kit.pattern.slice();
+    return {
+      steps: home.slice(),
+      home: home,
+      cursor: 0,
+      playing: false,
+      bpm: kit.bpm,
+      swing: kit.swing,
+      last: -1
+    };
+  }
+
+  function hits(state, step) {
+    var m = state.steps[step] || 0;
+    var out = [];
+    for (var i = 0; i < 16; i++) if (m & (1 << i)) out.push(i);
+    return out;
+  }
+
+  function toggle(state, pad) {
+    var m = state.steps[state.cursor] || 0;
+    state.steps[state.cursor] = (m ^ (1 << pad)) >>> 0;
+    state.last = pad;
+  }
+
+  function restore(state) {
+    state.steps = state.home.slice();
+    state.cursor = 0;
+    state.playing = false;
+    state.last = -1;
+  }
+
+  return { create: create, hits: hits, toggle: toggle, restore: restore };
+})();
+
+var KIT = {"id": 326, "slug": "ivory-boom-326", "title": "IVORY \u00b7 BOOM 93", "room": "Ivory", "room_id": "ivory", "groove": "BOOM", "bpm": 93, "swing": 56, "tune": 1, "color": "Ivory", "accent": "#b08d3e", "body": "#e6dcc8", "body2": "#f3ead8", "ink": "#1c1c1c", "lcd": "#10160e", "digit": "#d6ff4a", "pads": ["#b08d3e", "#3a342c", "#8c1c1c", "#37332c", "#866d37", "#8c1c1c", "#37332c", "#3a342c", "#b08d3e", "#37332c", "#3a342c", "#9a4929", "#b08d3e", "#8c1c1c", "#3a342c", "#37332c"], "pattern": [3073, 512, 8, 576, 2, 8704, 8200, 512, 1, 512, 8, 576, 2, 512, 8, 528], "emotion": "Boom", "shape": "Pad", "size": "Sixteen", "set": "AMP", "hint": "Ivory room. BOOM at 93 BPM. Swing 56. Tap a pad. Press play. While stopped, a pad writes that sound onto the lit step."};
+/* AMP pad face. KIT is baked above this script. */
+var LABELS = ["KIK","SNR","CLP","HAT","OPN","TOM","CNG","RIM","COW","SHK","CLK","BAS","STB","PRC","TMB","RID"];
+var KEYS = {
+  "1": 0, "2": 1, "3": 2, "4": 3,
+  "q": 4, "w": 5, "e": 6, "r": 7,
+  "a": 8, "s": 9, "d": 10, "f": 11,
+  "z": 12, "x": 13, "c": 14, "v": 15,
+  "Q": 4, "W": 5, "E": 6, "R": 7,
+  "A": 8, "S": 9, "D": 10, "F": 11,
+  "Z": 12, "X": 13, "C": 14, "V": 15
+};
+var state = NFTzPad.create(KIT);
+var actx = null;
+var master = null;
+var noiseBuf = null;
+var nextNote = 0;
+var lit = -1;
+
+function lum(hex) {
+  var h = hex.replace("#", "");
+  var r = parseInt(h.slice(0, 2), 16);
+  var g = parseInt(h.slice(2, 4), 16);
+  var b = parseInt(h.slice(4, 6), 16);
+  return 0.22 * r + 0.7 * g + 0.08 * b;
+}
+function paintChrome() {
+  var shell = document.querySelector(".shell");
+  shell.style.setProperty("--body", KIT.body);
+  shell.style.setProperty("--body2", KIT.body2);
+  shell.style.setProperty("--ink", KIT.ink);
+  shell.style.setProperty("--accent", KIT.accent);
+  shell.style.setProperty("--lcd", KIT.lcd);
+  shell.style.setProperty("--digit", KIT.digit);
+  document.getElementById("chip").textContent = "#" + String(KIT.id).padStart(3, "0");
+  document.getElementById("bpm").textContent = String(KIT.bpm);
+  document.getElementById("groove").textContent = KIT.groove;
+  document.getElementById("swing").textContent = "swing " + KIT.swing;
+  var pads = document.getElementById("pads");
+  KIT.pads.forEach(function (color, i) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "pad";
+    b.setAttribute("data-pad", String(i));
+    b.style.background = color;
+    b.style.color = lum(color) > 168 ? "#161616" : "#f6f6f6";
+    b.innerHTML = "<b>" + LABELS[i] + "</b>";
+    b.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      var vel = 0.62 + 0.38 * (1 - Math.min(1, Math.max(0, e.offsetY / Math.max(1, b.clientHeight))));
+      onPad(i, vel);
+    });
+    pads.appendChild(b);
+  });
+  var steps = document.getElementById("steps");
+  for (var s = 0; s < 16; s++) {
+    var lamp = document.createElement("button");
+    lamp.type = "button";
+    lamp.className = "lamp";
+    lamp.setAttribute("data-step", String(s));
+    lamp.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      if (state.playing) return;
+      state.cursor = Number(this.getAttribute("data-step"));
+      render();
+    });
+    steps.appendChild(lamp);
+  }
+}
+function render() {
+  var show = state.playing && lit >= 0 ? lit : state.cursor;
+  document.querySelectorAll(".lamp").forEach(function (el) {
+    var n = Number(el.getAttribute("data-step"));
+    el.classList.toggle("on", n === show);
+    el.classList.toggle("beat", (state.steps[n] & 1) !== 0 || (state.steps[n] & 2) !== 0);
+  });
+  var mask = state.steps[show] || 0;
+  document.querySelectorAll(".pad").forEach(function (el) {
+    var n = Number(el.getAttribute("data-pad"));
+    el.classList.toggle("on", (mask & (1 << n)) !== 0);
+  });
+  document.getElementById("play").classList.toggle("go", state.playing);
+  document.getElementById("play").textContent = state.playing ? "STOP" : "PLAY";
+}
+function noise() {
+  if (noiseBuf) return noiseBuf;
+  var len = actx.sampleRate;
+  noiseBuf = actx.createBuffer(1, len, actx.sampleRate);
+  var d = noiseBuf.getChannelData(0);
+  for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  return noiseBuf;
+}
+function ensure() {
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return false;
+  if (!actx) {
+    actx = new AC();
+    master = actx.createGain();
+    master.gain.value = 0.85;
+    var comp = actx.createDynamicsCompressor();
+    comp.threshold.value = -14;
+    comp.knee.value = 8;
+    comp.ratio.value = 3;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.16;
+    master.connect(comp);
+    comp.connect(actx.destination);
+  }
+  if (actx.state === "suspended") actx.resume();
+  return true;
+}
+function env(t, peak, attack, dur) {
+  var g = actx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.001, peak), t + attack);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  return g;
+}
+function tone(type, freq, t, peak, attack, dur, dest) {
+  var o = actx.createOscillator();
+  o.type = type;
+  o.frequency.setValueAtTime(Math.max(30, freq), t);
+  var g = env(t, peak, attack, dur);
+  o.connect(g);
+  g.connect(dest || master);
+  o.start(t);
+  o.stop(t + dur + 0.02);
+  return o;
+}
+function burst(t, dur, peak, type, freq, q) {
+  var src = actx.createBufferSource();
+  src.buffer = noise();
+  var f = actx.createBiquadFilter();
+  f.type = type;
+  f.frequency.value = freq;
+  if (q) f.Q.value = q;
+  var g = env(t, peak, 0.004, dur);
+  src.connect(f);
+  f.connect(g);
+  g.connect(master);
+  src.start(t);
+  src.stop(t + dur + 0.02);
+}
+function tuned(freq) {
+  return freq * Math.pow(2, (KIT.tune || 0) / 12);
+}
+function voice(i, t, vel) {
+  if (!ensure()) return;
+  vel = vel || 0.8;
+  if (i === 0) {
+    var o = actx.createOscillator();
+    o.type = "sine";
+    o.frequency.setValueAtTime(172, t);
+    o.frequency.exponentialRampToValueAtTime(46, t + 0.09);
+    var g = env(t, 0.95 * vel, 0.004, 0.28);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t + 0.32);
+  } else if (i === 1) {
+    tone("triangle", 196, t, 0.28 * vel, 0.004, 0.16);
+    burst(t, 0.18, 0.34 * vel, "highpass", 1800, 0.7);
+  } else if (i === 2) {
+    burst(t, 0.04, 0.28 * vel, "bandpass", 1400, 0.8);
+    burst(t + 0.03, 0.05, 0.26 * vel, "bandpass", 1800, 0.8);
+    burst(t + 0.06, 0.12, 0.22 * vel, "highpass", 2000, 0.6);
+  } else if (i === 3) {
+    burst(t, 0.045, 0.16 * vel, "highpass", 7000, 0.7);
+  } else if (i === 4) {
+    burst(t, 0.38, 0.18 * vel, "highpass", 6000, 0.6);
+  } else if (i === 5) {
+    var tom = actx.createOscillator();
+    tom.type = "sine";
+    tom.frequency.setValueAtTime(tuned(180), t);
+    tom.frequency.exponentialRampToValueAtTime(tuned(78), t + 0.12);
+    var tg = env(t, 0.4 * vel, 0.004, 0.22);
+    tom.connect(tg); tg.connect(master);
+    tom.start(t); tom.stop(t + 0.26);
+  } else if (i === 6) {
+    tone("sine", tuned(240), t, 0.28 * vel, 0.004, 0.16);
+  } else if (i === 7) {
+    tone("square", 940, t, 0.08 * vel, 0.002, 0.04);
+    burst(t, 0.03, 0.12 * vel, "highpass", 3000, 0.5);
+  } else if (i === 8) {
+    tone("square", 587, t, 0.08 * vel, 0.003, 0.18);
+    tone("square", 845, t, 0.05 * vel, 0.003, 0.16);
+  } else if (i === 9) {
+    burst(t, 0.04, 0.1 * vel, "highpass", 5000, 0.4);
+  } else if (i === 10) {
+    tone("sine", 1760, t, 0.08 * vel, 0.002, 0.03);
+  } else if (i === 11) {
+    tone("sine", tuned(52), t, 0.55 * vel, 0.006, 0.26);
+  } else if (i === 12) {
+    tone("triangle", tuned(196), t, 0.1 * vel, 0.005, 0.18);
+    tone("triangle", tuned(247), t, 0.07 * vel, 0.005, 0.16);
+  } else if (i === 13) {
+    var p = actx.createOscillator();
+    p.type = "sine";
+    p.frequency.setValueAtTime(520, t);
+    p.frequency.exponentialRampToValueAtTime(180, t + 0.08);
+    var pg = env(t, 0.16 * vel, 0.003, 0.1);
+    p.connect(pg); pg.connect(master);
+    p.start(t); p.stop(t + 0.14);
+  } else if (i === 14) {
+    burst(t, 0.14, 0.14 * vel, "bandpass", 3200, 1.2);
+  } else if (i === 15) {
+    tone("triangle", 740, t, 0.05 * vel, 0.002, 0.22);
+    burst(t, 0.2, 0.08 * vel, "highpass", 5000, 0.5);
+  }
+}
+function onPad(i, vel) {
+  if (!state.playing) NFTzPad.toggle(state, i);
+  else state.last = i;
+  try { voice(i, ensure() ? actx.currentTime : 0, vel); } catch (e) {}
+  var el = document.querySelector('[data-pad="' + i + '"]');
+  if (el) {
+    el.classList.add("hit");
+    setTimeout(function () { el.classList.remove("hit"); }, 90);
+  }
+  render();
+}
+function stepDur(step) {
+  var base = 60 / state.bpm / 4;
+  var bias = Math.max(0, Math.min(0.42, (state.swing - 50) / 50 * 0.42));
+  return base * (step % 2 === 0 ? 1 + bias : 1 - bias);
+}
+function scheduler() {
+  if (!state.playing || !actx) return;
+  var horizon = actx.currentTime + 0.14;
+  var guard = 0;
+  while (nextNote < horizon && guard < 32) {
+    guard += 1;
+    var step = state.cursor;
+    NFTzPad.hits(state, step).forEach(function (p) {
+      try { voice(p, nextNote, 0.86); } catch (e) {}
+    });
+    lit = step;
+    nextNote += stepDur(step);
+    state.cursor = (step + 1) % 16;
+  }
+  render();
+  requestAnimationFrame(scheduler);
+}
+function playToggle() {
+  state.playing = !state.playing;
+  if (state.playing) {
+    try { ensure(); } catch (e) { state.playing = false; }
+    if (state.playing && actx) {
+      state.cursor = 0;
+      lit = 0;
+      nextNote = actx.currentTime + 0.06;
+      requestAnimationFrame(scheduler);
+    }
+  } else {
+    lit = -1;
+  }
+  render();
+}
+document.getElementById("play").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  playToggle();
+});
+document.getElementById("clear").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  NFTzPad.restore(state);
+  lit = -1;
+  render();
+});
+window.addEventListener("keydown", function (e) {
+  if (e.key === " " || e.code === "Space") {
+    e.preventDefault();
+    playToggle();
+    return;
+  }
+  if (e.key === "Escape") {
+    e.preventDefault();
+    NFTzPad.restore(state);
+    lit = -1;
+    render();
+    return;
+  }
+  if (KEYS[e.key] == null) return;
+  e.preventDefault();
+  onPad(KEYS[e.key], 0.9);
+});
+function fit() {
+  var s = document.querySelector(".shell");
+  var n = Math.min(window.innerWidth, window.innerHeight);
+  if (!n) return;
+  s.style.width = n + "px";
+  s.style.height = n + "px";
+}
+window.addEventListener("resize", fit);
+paintChrome();
+fit();
+render();
+
+if (new URLSearchParams(location.search).get("qa") === "1") {
+  var lines = [];
+  function check(name, ok, extra) {
+    lines.push((ok ? "PASS" : "FAIL") + " " + name + (extra ? " " + extra : ""));
+  }
+  check("downbeat", (KIT.pattern[0] & 1) === 1, "mask=" + KIT.pattern[0]);
+  check("sixteen", KIT.pattern.length === 16 && KIT.pads.length === 16);
+  var snap = state.steps[0];
+  onPad(3, 0.8);
+  check("toggle", state.steps[0] === ((snap ^ (1 << 3)) >>> 0), "now=" + state.steps[0]);
+  check("last", state.last === 3);
+  NFTzPad.restore(state);
+  check("restore", state.steps[0] === KIT.pattern[0] && state.cursor === 0 && state.playing === false);
+  document.querySelector('[data-step="4"]').dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+  check("lamp", state.cursor === 4);
+  var pre = document.createElement("pre");
+  pre.id = "qa";
+  var fails = lines.filter(function (l) { return l.indexOf("FAIL") === 0; }).length;
+  pre.textContent = (fails ? "FAILED " + fails : "ALL PASS " + lines.length) + "\n" + lines.join("\n");
+  pre.style.cssText = "position:absolute;left:0;right:0;bottom:0;max-height:42%;overflow:auto;margin:0;background:#000;color:#ccff00;font:12px/1.35 ui-monospace,monospace;z-index:9;white-space:pre-wrap;padding:8px";
+  document.body.appendChild(pre);
+}
+
+</script>
+</body>
+</html>

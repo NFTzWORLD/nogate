@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>OCHRE</title>
+  <style>
+    :root { color-scheme: dark; --accent: #c4a15a; --ink: #14110c; --edge: #4a4034; }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #000;
+      color: #f4f1ea;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font: 16px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+    button, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    #app {
+      width: min(430px, 100%);
+      height: min(932px, 100svh);
+      display: flex;
+      background: #000;
+      /* Outer black bezel. An iframe crop should land on black, not on the board. */
+      padding: 12px;
+    }
+    #frame {
+      flex: 1;
+      min-height: 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      border: 1px solid var(--edge);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    #cover, #studio {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #cover[hidden], #studio[hidden] { display: none !important; }
+    #cover {
+      padding: 28px 20px calc(20px + env(safe-area-inset-bottom));
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .mark {
+      margin: 0;
+      color: var(--accent);
+      letter-spacing: .22em;
+      font-size: 28px;
+      font-weight: 500;
+    }
+    #cover p.grade {
+      margin: 12px 0 0;
+      color: var(--accent);
+      letter-spacing: .18em;
+      font-size: 13px;
+    }
+    .sub {
+      margin: 6px 0 16px;
+      color: #f4f1ea;
+    }
+    #cover p { margin: 0 0 14px; color: #c8c2b6; }
+    #open {
+      margin-top: auto;
+      min-height: 52px;
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      color: var(--ink);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    #open:active { background: #d4b56e; }
+    .bar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 44px;
+      padding: 0 8px 0 14px;
+      border-bottom: 1px solid #1c1c1c;
+    }
+    .bar b {
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: .18em;
+    }
+    #coverBtn {
+      min-height: 44px;
+      min-width: 72px;
+      background: transparent;
+      border: 0;
+      color: #c8c2b6;
+    }
+    .board-wrap {
+      flex: 1 1 auto;
+      min-height: 120px;
+      background: #000;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    .dock {
+      flex: 0 0 auto;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      border-top: 1px solid #1c1c1c;
+      background: #000;
+    }
+    .pal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin: 0 0 6px;
+    }
+    .dock label {
+      color: #9a9184;
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid #2c2c2c;
+      background: #111;
+      font-size: 16px;
+    }
+    .swatches {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin: 4px 0 6px;
+      padding: 4px 2px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+      scrollbar-width: none;
+    }
+    .swatches::-webkit-scrollbar { display: none; }
+    .swatches button {
+      flex: 0 0 44px;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, .28);
+    }
+    .swatches button[aria-pressed="true"] {
+      outline: 2px solid #f4f1ea;
+      outline-offset: 2px;
+    }
+    #colorName {
+      margin: 0;
+      color: #c8c2b6;
+      font-size: 14px;
+    }
+    .tools { display: flex; gap: 6px; }
+    #actions { margin-top: 6px; }
+    .tools button {
+      flex: 1;
+      min-height: 44px;
+      padding: 0 4px;
+      border-radius: 10px;
+      border: 1px solid #2c2c2c;
+      background: #111;
+      color: #f4f1ea;
+    }
+    .tools button[aria-pressed="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    #barGrade {
+      color: #c8c2b6;
+      letter-spacing: .14em;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    #cover label {
+      display: block;
+      margin: 8px 0 6px;
+      color: #9a9184;
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    #gradePick { margin: 4px 0 12px; }
+    .tools button:active { background: #1c1c1c; }
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="frame">
+      <section id="cover">
+        <h1 class="mark" id="mark">OCHRE</h1>
+        <p class="grade" id="gradeLine">STUDENT GRADE</p>
+        <p class="sub" id="gradeNote">The everyday tube.</p>
+        <p>Open the board. Paint with a finger. Choose a palette from the menu, the way a paint program does, then choose a color.</p>
+        <p>The picture stays on this screen. Nothing is uploaded and nothing is stored.</p>
+        <p id="runLine">200 of 420.</p>
+                <button type="button" id="open">Open the board</button>
+      </section>
+      <section id="studio" hidden>
+        <div class="bar">
+          <b>OCHRE</b>
+          <span id="barGrade">Student</span>
+          <button type="button" id="coverBtn">Cover</button>
+        </div>
+        <div class="board-wrap">
+          <canvas id="board" aria-label="Paint board"></canvas>
+        </div>
+        <div class="dock">
+          <div class="pal-head">
+            <label for="palette">Palette</label>
+            <span id="colorName"></span>
+          </div>
+          <select id="palette"></select>
+          <div class="swatches" id="swatches" role="listbox" aria-label="Colors"></div>
+          <div class="tools" id="sizes"></div>
+          <div class="tools" id="actions"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script>
+    const PALETTES = [
+      { id: "earth", name: "Earth", colors: [
+        ["Yellow Ochre", "#C8A24A"],
+        ["Raw Sienna", "#B56A2B"],
+        ["Burnt Sienna", "#8C3A1E"],
+        ["Raw Umber", "#6B4A32"],
+        ["Olive", "#6B7030"],
+        ["Bone", "#E6DCC8"],
+        ["Black", "#161616"],
+        ["White", "#F4F1EA"]
+      ]},
+      { id: "primary", name: "Primary", colors: [
+        ["Cadmium Red", "#E23B2F"],
+        ["Yellow", "#F2C200"],
+        ["Ultramarine", "#2F4FBF"],
+        ["Green", "#1F8A4C"],
+        ["Orange", "#F07A12"],
+        ["White", "#F7F7F5"],
+        ["Black", "#161616"]
+      ]},
+      { id: "neon", name: "Neon", colors: [
+        ["Magenta", "#FF2BD6"],
+        ["Lime", "#C6FF00"],
+        ["Cyan", "#19F0FF"],
+        ["Violet", "#7A3CFF"],
+        ["Orange", "#FF6A00"],
+        ["White", "#FFFFFF"]
+      ]},
+      { id: "pastel", name: "Pastel", colors: [
+        ["Blush", "#F3B6C4"],
+        ["Butter", "#F6E3A1"],
+        ["Mint", "#A9E6C8"],
+        ["Lilac", "#C9B6F2"],
+        ["Sky", "#A9D4F5"],
+        ["Cream", "#F7F1E4"]
+      ]},
+      { id: "ink", name: "Ink", colors: [
+        ["Ivory Black", "#1A1A1A"],
+        ["Payne Grey", "#5C6B7A"],
+        ["Warm Grey", "#A3988C"],
+        ["Sepia", "#8A6244"],
+        ["White", "#F4F1EA"]
+      ]},
+      { id: "candy", name: "Candy", colors: [
+        ["Cherry", "#E23B57"],
+        ["Tangerine", "#FF8A3D"],
+        ["Lemon", "#FFE14A"],
+        ["Grape", "#8B5CC7"],
+        ["Bubblegum", "#FF8AD4"],
+        ["Mint", "#5DDBB0"]
+      ]}
+    ];
+    const SIZES = [
+      { id: "tip", label: "Tip", px: 8 },
+      { id: "finger", label: "Finger", px: 24 },
+      { id: "palm", label: "Palm", px: 48 }
+    ];
+    const GRADES = [
+      { id: "Student", n: 200, accent: "#c4a15a", ink: "#14110c", edge: "#4a4034", palette: "earth", swatch: "", note: "The everyday tube.", countLine: "200 of 420." },
+      { id: "Artist", n: 130, accent: "#e0b15a", ink: "#14110c", edge: "#6a5430", palette: "primary", swatch: "", note: "A working tube.", countLine: "130 of 420." },
+      { id: "Studio", n: 60, accent: "#c46a32", ink: "#14110c", edge: "#6a3a22", palette: "ink", swatch: "", note: "A deep tube for long sessions.", countLine: "60 of 420." },
+      { id: "Museum", n: 24, accent: "#efe2c4", ink: "#14110c", edge: "#6a6456", palette: "pastel", swatch: "", note: "A pale tube, kept for the wall.", countLine: "24 of 420." },
+      { id: "Archive", n: 6, accent: "#8c3a1e", ink: "#f4f1ea", edge: "#4a2418", palette: "earth", swatch: "Burnt Sienna", note: "The old tube. Six in this run.", countLine: "6 of 420." }
+    ];
+    const BAKED = "Student";
+    const MAX_UNDO = 8;
+
+    const cover = document.getElementById("cover");
+    const studio = document.getElementById("studio");
+    const canvas = document.getElementById("board");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const paletteSelect = document.getElementById("palette");
+    const swatchRow = document.getElementById("swatches");
+    const colorName = document.getElementById("colorName");
+    const sizes = document.getElementById("sizes");
+    const actions = document.getElementById("actions");
+
+    let color = PALETTES[0].colors[0][1];
+    let pigment = PALETTES[0].colors[0][0];
+    let sizePx = 24;
+    let booted = false;
+    let hinted = false;
+    let drawing = false;
+    let activeId = null;
+    let last = null;
+    let lastMid = null;
+    const undos = [];
+    let clearArmed = 0;
+
+    PALETTES.forEach((p) => {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name;
+      paletteSelect.appendChild(opt);
+    });
+
+    function currentPalette() {
+      return PALETTES.find((p) => p.id === paletteSelect.value) || PALETTES[0];
+    }
+
+    function paintSwatches() {
+      const palette = currentPalette();
+      swatchRow.replaceChildren();
+      palette.colors.forEach((pair, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.style.background = pair[1];
+        btn.setAttribute("role", "option");
+        btn.setAttribute("aria-label", pair[0]);
+        btn.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+        btn.addEventListener("click", () => chooseColor(pair[0], pair[1]));
+        swatchRow.appendChild(btn);
+      });
+      chooseColor(palette.colors[0][0], palette.colors[0][1]);
+    }
+
+    function chooseColor(name, hex) {
+      pigment = name;
+      color = hex;
+      colorName.textContent = name;
+      swatchRow.querySelectorAll("button").forEach((btn) => {
+        btn.setAttribute("aria-pressed", btn.getAttribute("aria-label") === name ? "true" : "false");
+      });
+    }
+
+    function setSize(px, id) {
+      sizePx = px;
+      sizes.querySelectorAll("[data-size]").forEach((btn) => {
+        btn.setAttribute("aria-pressed", btn.getAttribute("data-size") === id ? "true" : "false");
+      });
+    }
+
+    SIZES.forEach((s) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = s.label;
+      btn.setAttribute("data-size", s.id);
+      btn.setAttribute("aria-pressed", s.id === "finger" ? "true" : "false");
+      btn.addEventListener("click", () => setSize(s.px, s.id));
+      sizes.appendChild(btn);
+    });
+
+    const undoBtn = document.createElement("button");
+    undoBtn.type = "button";
+    undoBtn.textContent = "Undo";
+    undoBtn.addEventListener("click", undo);
+    actions.appendChild(undoBtn);
+
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.textContent = "Clear";
+    clearBtn.addEventListener("click", askClear);
+    actions.appendChild(clearBtn);
+
+    paletteSelect.addEventListener("change", paintSwatches);
+
+    function gradeByName(name) {
+      return GRADES.find((g) => g.id.toLowerCase() === String(name || "").toLowerCase()) || GRADES[0];
+    }
+
+    function applyGrade(g) {
+      document.documentElement.style.setProperty("--accent", g.accent);
+      document.documentElement.style.setProperty("--ink", g.ink);
+      document.documentElement.style.setProperty("--edge", g.edge);
+      document.getElementById("gradeLine").textContent = g.id.toUpperCase() + " GRADE";
+      document.getElementById("gradeNote").textContent = g.note;
+      document.getElementById("runLine").textContent = g.countLine;
+      document.getElementById("barGrade").textContent = g.id;
+      paletteSelect.value = g.palette;
+      paintSwatches();
+      if (g.swatch) {
+        const hit = [...swatchRow.querySelectorAll("button")].find((b) => b.getAttribute("aria-label") === g.swatch);
+        if (hit) hit.click();
+      }
+    }
+
+    const gradePick = document.getElementById("gradePick");
+    if (gradePick && !BAKED) {
+      GRADES.forEach((g) => {
+        const opt = document.createElement("option");
+        opt.value = g.id;
+        opt.textContent = g.id + " · " + g.n;
+        gradePick.appendChild(opt);
+      });
+      gradePick.addEventListener("change", () => applyGrade(gradeByName(gradePick.value)));
+    }
+    const startGrade = BAKED
+      ? gradeByName(BAKED)
+      : gradeByName(new URLSearchParams(location.search).get("grade") || (gradePick ? gradePick.value : "Student"));
+    if (gradePick && !BAKED) gradePick.value = startGrade.id;
+    applyGrade(startGrade);
+
+    function brushWidth() {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width) return sizePx;
+      return sizePx * (canvas.width / rect.width);
+    }
+
+    function drawHint() {
+      const dpr = canvas.width / Math.max(1, canvas.getBoundingClientRect().width);
+      ctx.fillStyle = "#3a342c";
+      ctx.font = (15 * dpr) + "px ui-monospace, Menlo, monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Paint with a finger", canvas.width / 2, canvas.height / 2);
+      hinted = true;
+    }
+
+    function fit() {
+      if (studio.hidden) return;
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = Math.max(1, Math.round(rect.width * dpr));
+      const h = Math.max(1, Math.round(rect.height * dpr));
+      if (booted && canvas.width === w && canvas.height === h) return;
+      const prev = booted ? copyBoard() : null;
+      canvas.width = w;
+      canvas.height = h;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      if (prev) {
+        ctx.drawImage(prev, 0, 0, w, h);
+      } else {
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, w, h);
+        drawHint();
+      }
+      booted = true;
+    }
+
+    function copyBoard() {
+      const prev = document.createElement("canvas");
+      prev.width = canvas.width;
+      prev.height = canvas.height;
+      prev.getContext("2d").drawImage(canvas, 0, 0);
+      return prev;
+    }
+
+    function pushUndo() {
+      try {
+        undos.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        if (undos.length > MAX_UNDO) undos.shift();
+      } catch (err) {
+        /* A phone can refuse a large snapshot. Painting still works. */
+      }
+    }
+
+    function undo() {
+      const snap = undos.pop();
+      if (!snap || snap.width !== canvas.width || snap.height !== canvas.height) return;
+      ctx.putImageData(snap, 0, 0);
+    }
+
+    function askClear() {
+      const now = Date.now();
+      if (now - clearArmed < 1800) {
+        pushUndo();
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        hinted = false;
+        clearArmed = 0;
+        clearBtn.textContent = "Clear";
+        return;
+      }
+      clearArmed = now;
+      clearBtn.textContent = "Clear?";
+      setTimeout(() => {
+        if (clearBtn.textContent === "Clear?") clearBtn.textContent = "Clear";
+      }, 1800);
+    }
+
+    function point(e) {
+      const rect = canvas.getBoundingClientRect();
+      const sx = canvas.width / rect.width;
+      const sy = canvas.height / rect.height;
+      return {
+        x: (e.clientX - rect.left) * sx,
+        y: (e.clientY - rect.top) * sy
+      };
+    }
+
+    function stamp(p) {
+      const r = brushWidth() / 2;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function onDown(e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      if (drawing) return;
+      canvas.setPointerCapture(e.pointerId);
+      pushUndo();
+      drawing = true;
+      activeId = e.pointerId;
+      const p = point(e);
+      last = p;
+      lastMid = p;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      stamp(p);
+      hinted = false;
+      e.preventDefault();
+    }
+
+    function onMove(e) {
+      if (!drawing || e.pointerId !== activeId) return;
+      const p = point(e);
+      const mid = { x: (last.x + p.x) / 2, y: (last.y + p.y) / 2 };
+      ctx.strokeStyle = color;
+      ctx.lineWidth = brushWidth();
+      ctx.beginPath();
+      ctx.moveTo(lastMid.x, lastMid.y);
+      ctx.quadraticCurveTo(last.x, last.y, mid.x, mid.y);
+      ctx.stroke();
+      last = p;
+      lastMid = mid;
+      e.preventDefault();
+    }
+
+    function onUp(e) {
+      if (e.pointerId !== activeId) return;
+      drawing = false;
+      activeId = null;
+      last = null;
+      lastMid = null;
+    }
+
+    canvas.addEventListener("pointerdown", onDown, { passive: false });
+    canvas.addEventListener("pointermove", onMove, { passive: false });
+    canvas.addEventListener("pointerup", onUp);
+    canvas.addEventListener("pointercancel", onUp);
+    canvas.addEventListener("lostpointercapture", onUp);
+
+    function showBoard() {
+      cover.hidden = true;
+      studio.hidden = false;
+      requestAnimationFrame(() => {
+        fit();
+        requestAnimationFrame(fit);
+      });
+    }
+
+    function showCover() {
+      studio.hidden = true;
+      cover.hidden = false;
+    }
+
+    document.getElementById("open").addEventListener("click", showBoard);
+    document.getElementById("coverBtn").addEventListener("click", showCover);
+    window.addEventListener("resize", fit);
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", fit);
+    new ResizeObserver(fit).observe(document.querySelector(".board-wrap"));
+  </script>
+</body>
+</html>

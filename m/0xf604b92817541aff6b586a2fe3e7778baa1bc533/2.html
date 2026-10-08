@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<!-- NFTzWORLD ALARM. Real clock with an adjustable alarm. Shop https://x.com/NFTzWORLD. Robinhood 4663. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title></title>
+<style>
+  :root { --body:#1a1c1e; --body2:#2c3036; --ink:#f4f4f4; --accent:#e10600; --lcd:#101214; --digit:#f0d48a; --cheeks:#111; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; background:#070708; overflow:hidden; user-select:none; touch-action:manipulation; }
+  body { display:flex; align-items:center; justify-content:center; }
+  .shell { position:relative; width:100vmin; height:100vmin; background:#070708; color:var(--ink); }
+  .shell[data-cheeks="1"] { background:var(--cheeks); }
+  .case {
+    position:absolute; inset:7% 10% 6%;
+    display:flex; flex-direction:column; align-items:center;
+    padding:5% 6% 4%;
+    background:linear-gradient(180deg, var(--body2), var(--body));
+    border-radius:8%;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 10px 0 rgba(0,0,0,.35);
+  }
+  .top { width:100%; display:flex; align-items:flex-start; }
+  .brand small { display:block; letter-spacing:.18em; font:600 1.4vmin/1 ui-sans-serif,system-ui,sans-serif; opacity:.7; }
+  .brand b { display:block; margin-top:.2vmin; color:var(--accent); letter-spacing:.2em; font:700 1.5vmin/1 ui-sans-serif,system-ui,sans-serif; }
+  .brand strong { display:block; font:760 3.6vmin/.95 ui-sans-serif,system-ui,sans-serif; }
+  .year { font:600 1.45vmin/1 ui-monospace,Menlo,monospace; opacity:.7; }
+  .chip { margin-left:auto; font:600 1.7vmin/1 ui-monospace,Menlo,monospace; border:1px solid currentColor; border-radius:999px; padding:.3em .65em; }
+  .stage { position:relative; width:100%; height:46%; display:flex; align-items:center; justify-content:center; }
+  .roof, .bird, .bells, .flames, .pendulum, .strap { display:none; }
+  .shell[data-kind="cuckoo"] .roof, .shell[data-kind="cuckoo"] .bird { display:block; }
+  .shell[data-kind="church"] .bells, .shell[data-kind="twin"] .bells, .shell[data-kind="school"] .bells, .shell[data-kind="ship"] .bells { display:flex; }
+  .shell[data-kind="fireplace"] .flames { display:flex; }
+  .shell[data-kind="grandfather"] .pendulum { display:block; }
+  .shell[data-kind="watch"] .strap { display:block; }
+  .face { z-index:1; }
+  .roof {
+    position:absolute; top:0; left:50%; width:0; height:0; margin-left:-14vmin; z-index:2;
+    border-left:14vmin solid transparent; border-right:14vmin solid transparent; border-bottom:7vmin solid var(--accent);
+  }
+  .shell[data-kind="cuckoo"] .face { margin-top:5vmin; }
+  .bird {
+    position:absolute; top:9vmin; width:4vmin; height:3vmin; border-radius:50% 50% 40% 40%;
+    background:#f4f4f4; transform:translateY(2vmin); opacity:0;
+  }
+  body.ringing .bird { animation:bird 1.2s steps(2) infinite; }
+  @keyframes bird { 50% { opacity:1; transform:translateY(0); } }
+  .bells { position:absolute; top:1vmin; gap:18vmin; }
+  .bells i {
+    width:7vmin; height:6vmin; border-radius:50% 50% 45% 45%;
+    background:radial-gradient(circle at 40% 30%, #fff6d0, #c4a04a 60%, #6a5018);
+  }
+  body.ringing .bells i { animation:shake .12s linear infinite; }
+  @keyframes shake { 50% { transform:rotate(8deg); } }
+  .flames { position:absolute; bottom:0; gap:2vmin; z-index:2; }
+  .shell[data-kind="fireplace"] .face { margin-top:-4vmin; }
+  .flames i { width:4vmin; height:8vmin; border-radius:50% 50% 20% 20%; background:linear-gradient(#ffe08a, #ff6a1a 60%, transparent); animation:flick 0.4s ease-in-out infinite alternate; }
+  .flames i:nth-child(2) { height:11vmin; animation-delay:.15s; }
+  @keyframes flick { to { transform:scaleY(1.15) translateY(-1vmin); } }
+  .pendulum {
+    position:absolute; bottom:0; width:1.2vmin; height:16vmin; background:var(--accent); transform-origin:top center; animation:swing 2s ease-in-out infinite;
+  }
+  .pendulum::after { content:""; position:absolute; left:-2vmin; bottom:0; width:5vmin; height:5vmin; border-radius:50%; background:var(--accent); }
+  @keyframes swing { 50% { transform:rotate(12deg); } }
+  .strap { position:absolute; top:18%; width:8%; height:42%; background:#1a1a1a; border-radius:4px; }
+  .strap.left { left:4%; } .strap.right { right:4%; }
+  .face {
+    position:relative; width:34vmin; height:34vmin; border-radius:50%;
+    background:radial-gradient(circle at 50% 42%, #f7f4ee, #d9d3c8 72%);
+    box-shadow:inset 0 0 0 1.1vmin var(--body2), 0 0 0 .4vmin var(--accent);
+  }
+  .shell[data-kind="digital"] .face {
+    width:70%; height:22vmin; border-radius:6px;
+    background:#14080c; box-shadow:inset 0 0 12px #400, 0 0 0 .4vmin #300;
+  }
+  .shell[data-kind="watch"] .face { width:28vmin; height:28vmin; }
+  .shell[data-kind="grandfather"] .face { width:26vmin; height:26vmin; margin-top:-7vmin; }
+  .shell[data-kind="grandfather"] .pendulum { z-index:2; height:13vmin; }
+  .shell[data-kind="nightstand"] .face { box-shadow:0 0 18px var(--digit), inset 0 0 0 1vmin #111; background:#0c141c; }
+  .tick { position:absolute; left:50%; top:calc(50% - 15.5vmin); width:2px; height:15.5vmin; margin-left:-1px; background:linear-gradient(#222 0 2.2vmin, transparent 2.2vmin); transform-origin:center bottom; }
+  .shell[data-kind="digital"] .tick, .shell[data-kind="digital"] .hand, .shell[data-kind="digital"] .cap { display:none; }
+  .digits { display:none; position:absolute; inset:0; align-items:center; justify-content:center; color:var(--digit); font:700 4.2vmin/1 ui-monospace,Menlo,monospace; letter-spacing:.06em; }
+  .shell[data-kind="digital"] .digits { display:flex; }
+  .shell[data-kind="nightstand"] .digits { display:flex; color:var(--digit); font-size:2.4vmin; align-items:flex-end; padding-bottom:12%; }
+  .hand { position:absolute; left:50%; bottom:50%; transform-origin:50% 100%; border-radius:2px; }
+  .hour { width:4px; height:24%; margin-left:-2px; background:#1a1a1a; }
+  .minute { width:3px; height:34%; margin-left:-1.5px; background:#1a1a1a; }
+  .second { width:2px; height:38%; margin-left:-1px; background:var(--accent); }
+  .shell[data-kind="nightstand"] .hour, .shell[data-kind="nightstand"] .minute { background:#d7e6f4; }
+  .cap { position:absolute; left:50%; top:50%; width:2.2vmin; height:2.2vmin; margin:-1.1vmin 0 0 -1.1vmin; border-radius:50%; background:#1a1a1a; }
+  .readout {
+    width:86%; margin-top:2%; background:var(--lcd); color:var(--digit);
+    border-radius:6px; box-shadow:inset 0 3px 8px rgba(0,0,0,.55);
+    padding:2% 4%; font:700 2.6vmin/1.25 ui-monospace,Menlo,monospace;
+  }
+  #alarm { display:block; font-size:1.8vmin; letter-spacing:.08em; }
+  .keys { margin-top:auto; width:100%; display:flex; gap:2%; }
+  .keys button {
+    flex:1; appearance:none; border:0; cursor:pointer; color:#f4f4f4; background:#1c1c1c;
+    border-radius:7px; font:750 1.5vmin/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.08em;
+    padding:3% 0; box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 2px 0 #000;
+  }
+  .keys button.on { background:var(--accent); color:#141414; }
+  body.ringing .readout { box-shadow:0 0 16px var(--accent), inset 0 3px 8px rgba(0,0,0,.55); }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="case">
+      <div class="top">
+        <div class="brand"><small>NFTZWORLD</small><b>ALARM</b><strong id="model">ALARM</strong><div class="year" id="year"></div></div>
+        <div class="chip" id="chip">#00</div>
+      </div>
+      <div class="stage">
+        <div class="roof"></div>
+        <div class="bird"></div>
+        <div class="bells"><i></i><i></i></div>
+        <div class="flames"><i></i><i></i><i></i></div>
+        <div class="strap left"></div>
+        <div class="strap right"></div>
+        <div class="face">
+          <i class="tick" style="transform:rotate(0deg)"></i>
+<i class="tick" style="transform:rotate(30deg)"></i>
+<i class="tick" style="transform:rotate(60deg)"></i>
+<i class="tick" style="transform:rotate(90deg)"></i>
+<i class="tick" style="transform:rotate(120deg)"></i>
+<i class="tick" style="transform:rotate(150deg)"></i>
+<i class="tick" style="transform:rotate(180deg)"></i>
+<i class="tick" style="transform:rotate(210deg)"></i>
+<i class="tick" style="transform:rotate(240deg)"></i>
+<i class="tick" style="transform:rotate(270deg)"></i>
+<i class="tick" style="transform:rotate(300deg)"></i>
+<i class="tick" style="transform:rotate(330deg)"></i>
+          <div class="digits" id="digits"></div>
+          <div class="hand hour" id="hour"></div>
+          <div class="hand minute" id="minute"></div>
+          <div class="hand second" id="second"></div>
+          <div class="cap"></div>
+        </div>
+        <div class="pendulum"></div>
+      </div>
+      <div class="readout"><span id="now">--:--:--</span><span id="alarm">OFF</span></div>
+      <div class="keys">
+        <button type="button" id="hourUp">HOUR</button>
+        <button type="button" id="minUp">MIN</button>
+        <button type="button" id="arm">ARM</button>
+        <button type="button" id="snooze">SNOOZE</button>
+      </div>
+    </div>
+  </div>
+<script>
+var KIT = {"id":2,"slug":"church","kind":"church","title":"CHURCH BELL","room":"Church Bell","room_id":"church","year":"1740","groove":"Bell","voice":"Bell","alarmH":9,"alarmM":0,"alarm":"9:00 AM","note":"9:00 AM","body":"#2a3140","body2":"#3c4658","ink":"#f4f6fb","accent":"#f2d48a","lcd":"#10141c","digit":"#f2d48a","cheeks":"","hint":"1740 Church Bell. A real clock. HOUR and MIN set the alarm, which starts at 9:00 AM. ARM turns it on. It rings in a bell voice when that minute arrives. SNOOZE waits five minutes. The time is your clock, not a recording.","set":"AMP","edition":"ALARM","shape":"Clock"};
+/* NFTzWORLD ALARM. Real time. The alarm is adjustable. KIT is baked above this script. */
+var state = { ah: KIT.alarmH | 0, am: KIT.alarmM | 0 };
+var armed = false;
+var ringing = false;
+var snoozeAt = 0;
+var lastFired = "";
+var ringTimer = 0;
+var actx = null;
+var master = null;
+
+function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+function twelve(h) {
+  var hr = h % 12;
+  return hr || 12;
+}
+
+function stamp(h, m, s) {
+  var ap = h >= 12 ? "PM" : "AM";
+  var text = twelve(h) + ":" + pad(m);
+  if (s != null) text += ":" + pad(s);
+  return text + " " + ap;
+}
+
+function loadSave() {
+  try {
+    var raw = sessionStorage.getItem("nftzworld-alarm-" + KIT.id);
+    if (!raw) return;
+    var saved = JSON.parse(raw);
+    if (saved && saved.ah != null) {
+      state.ah = saved.ah % 24;
+      state.am = saved.am % 60;
+      armed = !!saved.armed;
+    }
+  } catch (e) {}
+}
+
+function save() {
+  try {
+    sessionStorage.setItem("nftzworld-alarm-" + KIT.id, JSON.stringify({
+      ah: state.ah, am: state.am, armed: armed
+    }));
+  } catch (e) {}
+}
+
+function ensure() {
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return false;
+  if (!actx) {
+    actx = new AC();
+    master = actx.createGain();
+    master.gain.value = 0.35;
+    master.connect(actx.destination);
+  }
+  if (actx.state === "suspended") actx.resume();
+  return true;
+}
+
+function env(freq, dur, type, peak, slide) {
+  if (!ensure()) return;
+  var t = actx.currentTime;
+  var o = actx.createOscillator();
+  o.type = type || "sine";
+  o.frequency.setValueAtTime(freq, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, slide), t + dur);
+  var g = actx.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g);
+  g.connect(master);
+  o.start(t);
+  o.stop(t + dur + 0.05);
+}
+
+function playVoice() {
+  var k = KIT.kind;
+  if (k === "cuckoo") {
+    env(784, 0.18, "sine", 0.28);
+    setTimeout(function () { env(622, 0.32, "sine", 0.28); }, 220);
+  } else if (k === "church") {
+    env(196, 1.8, "sine", 0.4, 98);
+    env(392, 1.4, "triangle", 0.08, 180);
+  } else if (k === "fireplace") {
+    env(330, 0.7, "sine", 0.22, 220);
+    env(247, 0.9, "triangle", 0.12);
+  } else if (k === "mantel") {
+    [523, 659, 784, 1046].forEach(function (f, i) {
+      setTimeout(function () { env(f, 0.28, "sine", 0.18); }, i * 180);
+    });
+  } else if (k === "nightstand") {
+    env(440, 0.35, "sine", 0.16);
+    setTimeout(function () { env(440, 0.35, "sine", 0.16); }, 420);
+  } else if (k === "watch") {
+    env(1760, 0.08, "square", 0.08);
+    setTimeout(function () { env(1760, 0.08, "square", 0.08); }, 160);
+    setTimeout(function () { env(1760, 0.12, "square", 0.08); }, 320);
+  } else if (k === "twin") {
+    for (var i = 0; i < 6; i++) {
+      setTimeout(function () { env(1046, 0.09, "square", 0.12); }, i * 110);
+    }
+  } else if (k === "travel") {
+    env(988, 0.12, "sine", 0.1);
+    setTimeout(function () { env(988, 0.12, "sine", 0.1); }, 240);
+  } else if (k === "station") {
+    env(740, 1.1, "sine", 0.28, 370);
+  } else if (k === "school") {
+    env(140, 0.45, "sawtooth", 0.12);
+    env(280, 0.45, "square", 0.06);
+  } else if (k === "ship") {
+    env(880, 0.16, "sine", 0.22);
+    setTimeout(function () { env(880, 0.22, "sine", 0.22); }, 200);
+  } else if (k === "digital") {
+    env(2093, 0.07, "square", 0.07);
+    setTimeout(function () { env(2093, 0.07, "square", 0.07); }, 140);
+  } else {
+    env(110, 1.6, "sine", 0.4, 55);
+    env(220, 1.2, "triangle", 0.08);
+  }
+}
+
+function stopRing() {
+  ringing = false;
+  if (ringTimer) clearTimeout(ringTimer);
+  ringTimer = 0;
+  document.body.classList.remove("ringing");
+}
+
+function ringLoop() {
+  if (!ringing) return;
+  playVoice();
+  ringTimer = setTimeout(ringLoop, KIT.kind === "twin" || KIT.kind === "digital" ? 900 : 1500);
+}
+
+var ringWhy = "";
+var ringStarted = 0;
+
+function startRing(why) {
+  if (ringing) return;
+  ringing = true;
+  ringWhy = why || "alarm";
+  ringStarted = Date.now();
+  document.body.classList.add("ringing");
+  ensure();
+  ringLoop();
+}
+
+function paint() {
+  var d = new Date();
+  var h = d.getHours();
+  var m = d.getMinutes();
+  var s = d.getSeconds();
+  var ms = d.getMilliseconds();
+  var hourAngle = (h % 12) * 30 + m * 0.5 + s * 0.008333;
+  var minAngle = m * 6 + s * 0.1;
+  var secAngle = s * 6 + ms * 0.006;
+  document.getElementById("hour").style.transform = "rotate(" + hourAngle + "deg)";
+  document.getElementById("minute").style.transform = "rotate(" + minAngle + "deg)";
+  document.getElementById("second").style.transform = "rotate(" + secAngle + "deg)";
+  var nowText = stamp(h, m, s);
+  document.getElementById("now").textContent = nowText;
+  var face = document.getElementById("digits");
+  if (face) face.textContent = pad(h) + ":" + pad(m) + ":" + pad(s);
+  var alarm = document.getElementById("alarm");
+  if (ringing) alarm.textContent = "RING";
+  else if (snoozeAt > Date.now()) alarm.textContent = "SNOOZE";
+  else alarm.textContent = (armed ? "ARMED  " : "OFF  ") + stamp(state.ah, state.am);
+  document.getElementById("arm").classList.toggle("on", armed);
+  var key = h + ":" + m;
+  if (armed && snoozeAt && Date.now() >= snoozeAt && !ringing) {
+    snoozeAt = 0;
+    startRing("snooze");
+  }
+  var due = armed && !ringing && !snoozeAt && h === state.ah && m === state.am;
+  if (due && lastFired !== key) {
+    lastFired = key;
+    startRing("alarm");
+  }
+  if (ringing && ringWhy === "alarm" && (h !== state.ah || m !== state.am)) stopRing();
+  if (ringing && ringWhy === "snooze" && Date.now() - ringStarted > 20000) stopRing();
+}
+
+function bump(which) {
+  if (which === "h") state.ah = (state.ah + 1) % 24;
+  else state.am = (state.am + 1) % 60;
+  lastFired = "";
+  save();
+  paint();
+}
+
+document.getElementById("hourUp").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  bump("h");
+});
+document.getElementById("minUp").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  bump("m");
+});
+document.getElementById("arm").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  ensure();
+  armed = !armed;
+  if (!armed) stopRing();
+  lastFired = "";
+  save();
+  paint();
+});
+document.getElementById("snooze").addEventListener("pointerdown", function (e) {
+  e.preventDefault();
+  stopRing();
+  if (armed) snoozeAt = Date.now() + 5 * 60 * 1000;
+  paint();
+});
+
+document.getElementById("model").textContent = String(KIT.room).toUpperCase();
+document.getElementById("year").textContent = KIT.year + "  " + KIT.voice;
+document.getElementById("chip").textContent = "#" + String(KIT.id).padStart(2, "0");
+var shell = document.querySelector(".shell");
+["body", "body2", "ink", "accent", "lcd", "digit", "cheeks"].forEach(function (k) {
+  if (KIT[k]) shell.style.setProperty("--" + k, KIT[k]);
+});
+shell.dataset.kind = KIT.kind;
+shell.dataset.cheeks = KIT.cheeks ? "1" : "0";
+loadSave();
+paint();
+setInterval(paint, 200);
+
+function fit() {
+  var el = document.querySelector(".shell");
+  var n = Math.min(window.innerWidth, window.innerHeight);
+  if (!n) return;
+  el.style.width = n + "px";
+  el.style.height = n + "px";
+}
+window.addEventListener("resize", fit);
+fit();
+
+if (new URLSearchParams(location.search).get("qa") === "1") {
+  var lines = [];
+  function check(name, ok) { lines.push((ok ? "PASS" : "FAIL") + " " + name); }
+  check("now", /AM|PM/.test(document.getElementById("now").textContent));
+  check("hands", !!document.getElementById("hour") && !!document.getElementById("minute") && !!document.getElementById("second"));
+  var before = state.am;
+  document.getElementById("minUp").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+  check("minute", state.am === (before + 1) % 60);
+  document.getElementById("arm").dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+  check("arm", armed === true && document.getElementById("arm").classList.contains("on"));
+  check("kind", document.querySelector(".shell").dataset.kind === KIT.kind);
+  var pre = document.createElement("pre");
+  pre.id = "qa";
+  var fails = lines.filter(function (l) { return l.indexOf("FAIL") === 0; }).length;
+  pre.textContent = (fails ? "FAILED " + fails : "ALL PASS " + lines.length) + "\n" + lines.join("\n");
+  pre.style.cssText = "position:absolute;left:0;right:0;bottom:0;margin:0;background:#000;color:#ccff00;font:12px/1.35 ui-monospace,monospace;z-index:9;padding:8px";
+  document.body.appendChild(pre);
+}
+
+</script>
+</body>
+</html>

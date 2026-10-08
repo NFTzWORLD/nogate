@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>OpenPlea</title>
+<style>
+  :root { --gold:#e4c56a; --ink:#f6f1e7; --mute:#e4d5be; --accent:#c9a6ff; --ground:#1a1030; --depth:#090612; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; height: 100svh; width: 100%; background: var(--depth); color: var(--ink); overflow-x: clip; }
+  body { font-family: Georgia, "Iowan Old Style", Palatino, "Palatino Linotype", serif; }
+  button, input { font: inherit; }
+  .stage { height: 100%; height: 100svh; width: 100%; max-width: 100%; overflow: hidden; }
+  .card {
+    height: 100%; min-height: 0; min-width: 0; max-width: 520px;
+    margin: 0 auto; width: 100%; max-width: min(520px, 100%); overflow: hidden;
+    padding: max(12px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
+    background: radial-gradient(120% 80% at 50% 18%, var(--ground), var(--depth) 72%);
+    display: flex; flex-direction: column;
+  }
+  .frame {
+    flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; overflow-x: hidden; overflow-y: auto;
+    border: 1.5px solid var(--gold); border-radius: 18px;
+    box-shadow: inset 0 0 0 1px var(--gold);
+    padding: 14px 12px 10px; position: relative;
+  }
+  .front, .back, .almanac { flex: 1; width: 100%; min-width: 0; display: flex; flex-direction: column; }
+  .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline;
+    letter-spacing: .12em; text-transform: uppercase; font-size: .72rem; color: var(--gold); }
+  .brand { letter-spacing: .06em; text-transform: none; font-size: .78rem; }
+  .coin { width: min(176px, 48vw); height: min(176px, 48vw); margin: 6px auto 0; flex: none; }
+  .coin svg { width: 100%; height: 100%; display: block; }
+  .almanac .coin { width: 128px; height: 128px; margin: 2px auto 0; }
+  h1, h2, .charge, .big, .stay {
+    width: min(100%, 16.25rem); max-width: 16.25rem; margin-left: auto; margin-right: auto; min-width: 0;
+  }
+  h1 { margin-top: 6px; text-align: center; font-weight: 700; letter-spacing: 0; display: block;
+    font-size: clamp(1.45rem, 6.2vw, 2.15rem); line-height: 1.05; overflow-wrap: anywhere; }
+  .rule { display: flex; align-items: center; gap: 10px; margin: 12px 18px 10px; color: var(--gold); }
+  .rule i { flex: 1; height: 1px; background: currentColor; display: block; }
+  .rule b { width: 7px; height: 7px; background: currentColor; transform: rotate(45deg); }
+  .charge { text-align: center; color: var(--mute); font-style: italic;
+    font-size: 1.02rem; line-height: 1.35; overflow-wrap: break-word; }
+  .quote {
+    flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end; margin: 10px 4px 0; text-align: center;
+  }
+  .qlabel { margin: 0; letter-spacing: .22em; text-transform: uppercase; font-size: .68rem; color: var(--gold); }
+  .qprice {
+    margin: 2px 0 0; font-weight: 700; font-variant-numeric: tabular-nums;
+    font-size: clamp(1.85rem, 8.4vw, 2.55rem); letter-spacing: .01em; line-height: 1.05;
+  }
+  .qmove { margin: 4px 0 0; font-style: italic; font-size: .98rem; color: var(--gold); line-height: 1.3; }
+  .qmove.down { color: var(--accent); }
+  .qwhen {
+    margin: 3px 0 0; letter-spacing: .1em; text-transform: uppercase;
+    font-size: .64rem; color: var(--mute);
+  }
+  .foot { margin-top: auto; padding-top: 14px; text-align: center; color: var(--gold);
+    letter-spacing: .12em; text-transform: uppercase; font-size: .68rem; }
+  .hint { margin: 8px 0 0; text-align: center; letter-spacing: .16em; text-transform: uppercase;
+    font-size: .64rem; color: var(--mute); }
+  .card .back, .card .almanac { display: none; }
+  .card.show-back .front, .card.show-almanac .front { display: none; }
+  .card.show-back .back { display: flex; }
+  .card.show-almanac .almanac { display: flex; }
+  .back h2 { margin: 10px 0 0; text-align: center; font-size: clamp(1.35rem, 6vw, 2rem); line-height: 1.05; overflow-wrap: anywhere; }
+  .big { margin: 16px 0 0; text-align: center; font-style: italic; font-size: clamp(1.12rem, 4.6vw, 1.45rem); line-height: 1.35; overflow-wrap: break-word; }
+  .paths { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin: 18px 4px 0; width: auto; max-width: 100%; }
+  .path { border: 1.5px solid var(--gold); border-radius: 12px; padding: 12px 10px; min-height: 108px; }
+  .path.bad { border-color: var(--accent); }
+  .path b { display: block; letter-spacing: .14em; font-size: .95rem; margin-bottom: 6px; }
+  .path span { display: block; font-style: italic; color: var(--mute); font-size: .92rem; line-height: 1.3; overflow-wrap: break-word; }
+  .stay { margin: 16px 0 0; text-align: center; font-style: italic; color: var(--mute); font-size: 1.05rem; }
+  #burn { appearance: none; margin-top: 14px; min-height: 56px; width: 100%; border-radius: 12px;
+    border: 1.5px solid var(--gold); background: transparent; color: var(--gold);
+    letter-spacing: .12em; text-transform: uppercase; font-size: .95rem; }
+  #note { min-height: 1.2em; text-align: center; color: var(--mute); font-style: italic; font-size: .95rem; }
+  .clock { margin: 8px 0 0; text-align: center; font-size: clamp(1.9rem, 8vw, 2.45rem); letter-spacing: .04em; line-height: 1; }
+  .when { margin: 4px 0 0; text-align: center; color: var(--mute); font-style: italic; font-size: 1rem; }
+  .moonrow { display: flex; gap: 10px; align-items: center; margin: 10px 2px 4px; min-width: 0; }
+  .moonrow svg { width: 68px; height: 68px; flex: none; }
+  .moonrow div { min-width: 0; }
+  .moonrow b { display: block; letter-spacing: .08em; font-size: .78rem; line-height: 1.25; }
+  .moonrow span { display: block; color: var(--mute); font-style: italic; font-size: .95rem; line-height: 1.3; overflow-wrap: break-word; }
+  .calhead { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+  .calhead button {
+    appearance: none; background: transparent; color: var(--gold); border: 1px solid transparent;
+    min-height: 44px; min-width: 0; border-radius: 10px;
+  }
+  .calhead button[data-month] { min-width: 44px; }
+  .monthname { flex: 1; letter-spacing: .08em; text-transform: uppercase; font-size: .78rem; border-color: transparent; }
+  .calwrap { width: 100%; max-width: 100%; overflow: hidden; }
+  table.cal { width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; }
+  table.cal th, table.cal td { width: 14.28%; text-align: center; padding: 0; vertical-align: middle; }
+  table.cal th { color: var(--gold); font-size: .62rem; letter-spacing: .04em; font-weight: 600; padding: 2px 0 4px; }
+  table.cal button {
+    appearance: none; -webkit-appearance: none; background: transparent; color: var(--ink);
+    border: 0; border-radius: 8px; width: 100%; min-width: 0; min-height: 32px; padding: 0;
+    font: inherit; font-size: .92rem;
+  }
+  table.cal button.on { box-shadow: inset 0 0 0 1.5px var(--gold); }
+  table.cal button.today { background: color-mix(in srgb, var(--gold) 30%, transparent); }
+  table.cal button.off { color: var(--mute); opacity: .45; }
+  .yearline { margin: 8px 0 0; text-align: center; letter-spacing: .08em; text-transform: uppercase; font-size: .68rem; color: var(--gold); }
+  .local { margin: 2px 0 0; text-align: center; font-style: italic; color: var(--mute); font-size: .82rem; }
+  .card.buster { --gold:#ccff00; --accent:#e23b3b; --ground:#14080c; --depth:#050304; --ink:#f7f3ea; --mute:#e7d7c4; }
+  .card.buster .frame { box-shadow: inset 0 0 0 1px var(--accent); }
+  @media (max-height: 640px) {
+    .coin { width: min(132px, 40vw); height: min(132px, 40vw); margin-top: 2px; }
+    .almanac .coin { width: 84px; height: 84px; }
+    h1 { margin-top: 4px; font-size: clamp(1.25rem, 5.6vw, 1.7rem); }
+    .rule { margin: 8px 16px 6px; }
+    .charge { font-size: .98rem; line-height: 1.3; }
+    .quote { margin-top: 6px; }
+    .qprice { font-size: clamp(1.55rem, 8vw, 2.15rem); }
+    .foot { padding-top: 8px; }
+    .hint { margin-top: 4px; }
+    .clock { font-size: clamp(1.55rem, 7vw, 2rem); margin-top: 4px; }
+    .moonrow { margin: 6px 2px 2px; }
+    .moonrow svg { width: 52px; height: 52px; }
+    .calhead button { min-height: 36px; }
+    table.cal button { min-height: 26px; }
+    .yearline { margin-top: 4px; }
+  }
+  @media (max-height: 540px) {
+    .card { padding: 8px 8px max(8px, env(safe-area-inset-bottom)); }
+    .frame { padding: 8px 10px 6px; }
+    .coin { width: min(104px, 32vw); height: min(104px, 32vw); }
+    .almanac .coin { width: 64px; height: 64px; }
+    h1 { font-size: clamp(1.12rem, 5.2vw, 1.45rem); }
+    .rule { margin: 5px 14px 4px; }
+    .charge { font-size: .92rem; line-height: 1.25; }
+    .quote { margin-top: 4px; }
+    .qprice { font-size: clamp(1.4rem, 7.4vw, 1.85rem); }
+    .qmove { font-size: .9rem; }
+    .foot { padding-top: 6px; }
+    .clock { font-size: 1.4rem; margin-top: 2px; }
+    .when { font-size: .88rem; }
+    .moonrow svg { width: 44px; height: 44px; }
+    .moonrow span { font-size: .86rem; }
+    .calhead { margin-top: 0; }
+    .calhead button { min-height: 32px; }
+    table.cal button { min-height: 22px; font-size: .8rem; }
+    .yearline, .local { margin-top: 2px; }
+    .path { min-height: 0; padding: 8px; }
+    #burn { min-height: 48px; margin-top: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<main class="stage" id="stage"></main>
+<script src="/looks.js"></script>
+<script>
+(() => {
+  const LOOKS = window.OPENPLEA_LOOKS || [];
+  const SYNODIC = 29.530588853;
+  const KNOWN_NEW = Date.UTC(2000, 0, 6, 18, 14, 0);
+  const params = new URLSearchParams(location.search);
+  let id = Math.max(1, Math.min(470, parseInt(params.get("id") || "1", 10) || 1));
+  const side = params.get("side");
+  let face = side === "back" ? 2 : side === "almanac" ? 1 : 0;
+  let shown = new Date();
+  let picked = null;
+  let clockTimer = 0;
+  let ethTimer = 0;
+  const stage = document.getElementById("stage");
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  }
+  function ymd(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function parseYMD(key) {
+    const [y, m, d] = key.split("-").map((n) => parseInt(n, 10));
+    return new Date(y, m - 1, d);
+  }
+  function noon(d) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0).getTime();
+  }
+  function doy(d) {
+    const start = new Date(d.getFullYear(), 0, 0);
+    return Math.round((d - start) / 86400000);
+  }
+  function yearLen(y) {
+    return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 366 : 365;
+  }
+  function fmtTime(d) {
+    return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+  function fmtDate(d) {
+    return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  }
+  function moonAgeDays(ms) {
+    let age = ((ms - KNOWN_NEW) / 86400000) % SYNODIC;
+    if (age < 0) age += SYNODIC;
+    return age;
+  }
+  function phaseName(phase) {
+    const bands = [
+      [0.033, "New moon"],
+      [0.216, "Waxing crescent"],
+      [0.283, "First quarter"],
+      [0.466, "Waxing gibbous"],
+      [0.533, "Full moon"],
+      [0.716, "Waning gibbous"],
+      [0.783, "Last quarter"],
+      [0.967, "Waning crescent"],
+      [1.001, "New moon"],
+    ];
+    for (const band of bands) if (phase < band[0]) return band[1];
+    return "New moon";
+  }
+  function moonInfo(ms) {
+    const age = moonAgeDays(ms);
+    const phase = age / SYNODIC;
+    const illum = (1 - Math.cos(2 * Math.PI * phase)) / 2;
+    return { age, phase, illum, name: phaseName(phase) };
+  }
+  function moonSVG(phase) {
+    const r = 40;
+    const steps = 72;
+    const k = Math.cos(phase * 2 * Math.PI);
+    const waxing = phase <= 0.5;
+    const pts = [];
+    for (let i = 0; i <= steps; i++) {
+      const y = -r + (2 * r * i) / steps;
+      const half = Math.sqrt(Math.max(0, r * r - y * y));
+      pts.push([50 + (waxing ? half : -half), 50 + y]);
+    }
+    for (let i = steps; i >= 0; i--) {
+      const y = -r + (2 * r * i) / steps;
+      const half = Math.sqrt(Math.max(0, r * r - y * y));
+      const x = waxing ? k * half : -k * half;
+      pts.push([50 + x, 50 + y]);
+    }
+    const d = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(2) + " " + p[1].toFixed(2)).join(" ") + "Z";
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="50" cy="50" r="42" fill="#140e18"/><path d="${d}" fill="#f4e6c4"/></svg>`;
+  }
+  function device(look) {
+    const ink = look.coinInk;
+    const accent = look.accent;
+    const s = look.suit;
+    if (s === "CLONE") return `<rect x="86" y="70" width="18" height="18" rx="2" fill="none" stroke="${ink}" stroke-width="1.6"/><rect x="96" y="78" width="18" height="18" rx="2" fill="none" stroke="${accent}" stroke-width="1.6"/>`;
+    if (s === "HIDE") return `<circle cx="100" cy="84" r="12" fill="none" stroke="${ink}" stroke-width="1.6"/><circle cx="100" cy="84" r="3.5" fill="${accent}"/><path d="M84 84h32" stroke="${ink}" stroke-width="2"/>`;
+    if (s === "QUIET") return `<rect x="86" y="72" width="28" height="20" rx="1.5" fill="none" stroke="${ink}" stroke-width="1.5"/><path d="M86 72 L100 86 L114 72" fill="none" stroke="${ink}" stroke-width="1.4"/><circle cx="100" cy="86" r="2" fill="${accent}"/>`;
+    if (s === "CUT") return `<circle cx="100" cy="84" r="14" fill="none" stroke="${ink}" stroke-width="1.6"/><path d="M100 70 A14 14 0 0 1 112 94 L100 84 Z" fill="${accent}"/>`;
+    if (s === "ARMY") {
+      let dots = "";
+      for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
+        const hot = (r + c + look.n) % 3 === 0;
+        dots += `<circle cx="${90 + c * 10}" cy="${74 + r * 10}" r="${hot ? 2.5 : 1.7}" fill="${hot ? accent : ink}"/>`;
+      }
+      return dots;
+    }
+    if (s === "OFFER") return `<rect x="90" y="70" width="22" height="26" rx="2" fill="none" stroke="${ink}" stroke-width="1.5"/><circle cx="106" cy="78" r="3" fill="none" stroke="${accent}" stroke-width="1.4"/>`;
+    if (s === "SERMON") return `<circle cx="100" cy="74" r="7" fill="none" stroke="${ink}" stroke-width="1.5"/><path d="M88 100 Q100 84 112 100" fill="none" stroke="${ink}" stroke-width="1.5"/><circle cx="96" cy="90" r="1.4" fill="${accent}"/><circle cx="104" cy="90" r="1.4" fill="${accent}"/>`;
+    if (s === "BLOC") return `<circle cx="92" cy="84" r="10" fill="none" stroke="${ink}" stroke-width="1.5"/><circle cx="108" cy="84" r="10" fill="none" stroke="${accent}" stroke-width="1.5"/><circle cx="100" cy="92" r="10" fill="none" stroke="${look.coinLight}" stroke-width="1.4"/>`;
+    if (s === "FREE") return `<circle cx="100" cy="82" r="14" fill="none" stroke="${ink}" stroke-width="1.5"/><text x="100" y="88" text-anchor="middle" fill="${ink}" font-family="Georgia, Palatino, serif" font-size="16">0</text>`;
+    if (s === "PLEA") return `<rect x="90" y="68" width="20" height="28" rx="1" fill="none" stroke="${ink}" stroke-width="1.5"/><path d="M94 76h12M94 82h12M94 88h8" stroke="${ink}" stroke-width="1.2"/><circle cx="112" cy="70" r="3.5" fill="none" stroke="${accent}" stroke-width="1.3"/>`;
+    return `<ellipse cx="100" cy="78" rx="24" ry="9" fill="none" stroke="${accent}" stroke-width="1.25"/><text x="100" y="81" text-anchor="middle" fill="${accent}" font-family="Georgia, Palatino, serif" font-size="7.2" letter-spacing="0.35">BUSTED</text>`;
+  }
+  function coinSVG(look) {
+    const light = look.coinLight;
+    const mid = look.coinMid;
+    const dark = look.coinDark;
+    const ink = look.coinInk;
+    const rim = look.coinRim;
+    const mint = look.coinMint;
+    const gid = "cg" + look.id;
+    let reeds = "";
+    for (let i = 0; i < 156; i++) {
+      const a = (i / 156) * Math.PI * 2;
+      const c = Math.cos(a);
+      const s = Math.sin(a);
+      reeds += `<line x1="${(100 + c * 86.4).toFixed(2)}" y1="${(100 + s * 86.4).toFixed(2)}" x2="${(100 + c * 98.4).toFixed(2)}" y2="${(100 + s * 98.4).toFixed(2)}" stroke="${i % 2 ? dark : rim}" stroke-width="1.15"/>`;
+    }
+    let beads = "";
+    for (let i = 0; i < 72; i++) {
+      const a = (i / 72) * Math.PI * 2 - Math.PI / 2;
+      beads += `<circle cx="${(100 + Math.cos(a) * 66.5).toFixed(2)}" cy="${(100 + Math.sin(a) * 66.5).toFixed(2)}" r="1.05" fill="${ink}"/>`;
+    }
+    const serial = String(look.id).padStart(3, "0");
+    const metal = String(look.metal || "Gold").toUpperCase();
+    return `<svg viewBox="0 0 200 200" role="img" aria-label="${esc(look.metal)} coin. NFTzWORLD minted. Token ${look.id}.">
+      <title>${esc(look.metal)} · NFTzWORLD · minted · ${serial}</title>
+      <defs>
+        <radialGradient id="${gid}" cx="32%" cy="26%" r="70%">
+          <stop offset="0" stop-color="${light}"/>
+          <stop offset="34%" stop-color="${mid}"/>
+          <stop offset="100%" stop-color="${dark}"/>
+        </radialGradient>
+        <radialGradient id="${gid}h" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="${light}" stop-opacity="0.9"/>
+          <stop offset="1" stop-color="${light}" stop-opacity="0"/>
+        </radialGradient>
+        <clipPath id="${gid}c"><circle cx="100" cy="100" r="98.2"/></clipPath>
+        <path id="${gid}t" d="M 32 82 A 74 74 0 0 1 168 82"/>
+      </defs>
+      <g clip-path="url(#${gid}c)">${reeds}</g>
+      <circle cx="100" cy="100" r="86.2" fill="url(#${gid})"/>
+      <ellipse cx="74" cy="62" rx="22" ry="13" fill="url(#${gid}h)" transform="rotate(-32 74 62)"/>
+      <circle cx="100" cy="100" r="86.2" fill="none" stroke="${rim}" stroke-width="2.2"/>
+      <circle cx="100" cy="100" r="81.4" fill="none" stroke="${light}" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="100" cy="100" r="78.2" fill="none" stroke="${dark}" stroke-width="1.35" opacity="0.8"/>
+      ${beads}
+      ${device(look)}
+      <text fill="${ink}" font-family="Georgia, Palatino, serif" font-size="12" font-weight="700" letter-spacing="1.7">
+        <textPath href="#${gid}t" startOffset="50%" text-anchor="middle">NFTzWORLD</textPath>
+      </text>
+      <text x="100" y="116" text-anchor="middle" fill="${ink}" font-family="Georgia, Palatino, serif" font-size="9" font-weight="700" letter-spacing="1.5">${esc(metal)}</text>
+      <text x="100" y="126" text-anchor="middle" fill="${ink}" font-family="Georgia, Palatino, serif" font-size="7.5" letter-spacing="1.1" opacity="0.85">${serial}</text>
+      <line x1="68" y1="136" x2="132" y2="136" stroke="${ink}" stroke-width="0.7" opacity="0.55"/>
+      <text x="100" y="149" text-anchor="middle" fill="${mint}" font-family="Georgia, Palatino, serif" font-size="9.5" font-weight="700" letter-spacing="2.4">MINTED</text>
+    </svg>`;
+  }
+  function monthCells(year, month) {
+    const first = new Date(year, month, 1);
+    const lead = first.getDay();
+    const count = new Date(year, month + 1, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < lead; i++) cells.push({ date: new Date(year, month, i - lead + 1), off: true });
+    for (let d = 1; d <= count; d++) cells.push({ date: new Date(year, month, d), off: false });
+    while (cells.length % 7) {
+      const last = cells[cells.length - 1].date;
+      cells.push({ date: new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1), off: true });
+    }
+    return cells;
+  }
+  function almanacHTML(look) {
+    const now = new Date();
+    const focus = picked || now;
+    const info = moonInfo(picked ? noon(picked) : now.getTime());
+    const cells = monthCells(shown.getFullYear(), shown.getMonth());
+    const monthName = shown.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+    const todayKey = ymd(now);
+    const pickKey = ymd(focus);
+    const heads = ["S", "M", "T", "W", "T", "F", "S"].map((ch) => `<th scope="col">${ch}</th>`).join("");
+    const dayBtn = (cell) => {
+      const key = ymd(cell.date);
+      const cls = [cell.off ? "off" : "", key === todayKey ? "today" : "", key === pickKey ? "on" : ""].filter(Boolean).join(" ");
+      const name = cell.date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+      return `<td><button type="button" data-stay data-day="${key}" class="${cls}" aria-label="${name}">${cell.date.getDate()}</button></td>`;
+    };
+    let rows = "";
+    for (let i = 0; i < cells.length; i += 7) {
+      rows += `<tr>${cells.slice(i, i + 7).map(dayBtn).join("")}</tr>`;
+    }
+    const n = doy(focus);
+    const len = yearLen(focus.getFullYear());
+    const moonAs = picked ? "Moon on " + focus.toLocaleDateString("en-GB", { day: "numeric", month: "long" }) : "Moon now";
+    return `<div class="top"><span>Almanac</span><span class="brand">NFTzWORLD</span><span>${esc(look.metal)}</span></div>
+      <div class="coin">${coinSVG(look)}</div>
+      <p class="clock" id="clock">${fmtTime(now)}</p>
+      <p class="when" id="dateLine">${fmtDate(now)}</p>
+      <div class="moonrow">
+        <div id="moonFace">${moonSVG(info.phase)}</div>
+        <div>
+          <b id="moonAs">${esc(moonAs)}</b>
+          <span id="moonName">${esc(info.name)}</span>
+          <span id="moonSay">${info.age.toFixed(1)} days · ${Math.round(info.illum * 100)}% lit</span>
+        </div>
+      </div>
+      <div class="calhead">
+        <button type="button" data-stay data-month="-1" aria-label="Previous month">‹</button>
+        <button type="button" class="monthname" data-stay data-now aria-label="Back to today">${esc(monthName)}</button>
+        <button type="button" data-stay data-month="1" aria-label="Next month">›</button>
+      </div>
+      <div class="calwrap"><table class="cal"><thead><tr>${heads}</tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="yearline" id="yearLine">Day ${n} · ${len - n} left in ${focus.getFullYear()}</p>
+      <p class="local">On this phone. Nothing is sent.</p>
+      <p class="hint">Tap the card for the back</p>`;
+  }
+
+  function money(n) {
+    return n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  async function readEth() {
+    const priceEl = document.getElementById("ethPrice");
+    const moveEl = document.getElementById("ethMove");
+    const whenEl = document.getElementById("ethWhen");
+    if (!priceEl || !moveEl || !whenEl) return;
+    let last = null;
+    let pct = null;
+    try {
+      const res = await fetch("https://api.exchange.coinbase.com/products/ETH-USD/stats", { cache: "no-store" });
+      if (!res.ok) throw new Error("coinbase");
+      const data = await res.json();
+      last = Number(data.last);
+      const opened = Number(data.open);
+      if (!(last > 0) || !(opened > 0)) throw new Error("price");
+      pct = ((last - opened) / opened) * 100;
+    } catch (err) {
+      try {
+        const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true", { cache: "no-store" });
+        if (!res.ok) throw new Error("gecko");
+        const data = await res.json();
+        last = Number(data.ethereum && data.ethereum.usd);
+        pct = Number(data.ethereum && data.ethereum.usd_24h_change);
+        if (!(last > 0) || !Number.isFinite(pct)) throw new Error("price");
+      } catch (err2) {
+        const priceNow = document.getElementById("ethPrice");
+        const moveNow = document.getElementById("ethMove");
+        const whenNow = document.getElementById("ethWhen");
+        if (!priceNow || !moveNow || !whenNow) return;
+        priceNow.textContent = "—";
+        moveNow.textContent = "The market did not answer.";
+        moveNow.classList.remove("down");
+        whenNow.textContent = "";
+        return;
+      }
+    }
+    const priceNow = document.getElementById("ethPrice");
+    const moveNow = document.getElementById("ethMove");
+    const whenNow = document.getElementById("ethWhen");
+    if (!priceNow || !moveNow || !whenNow) return;
+    priceNow.textContent = money(last);
+    const sign = pct > 0 ? "+" : "";
+    moveNow.textContent = sign + pct.toFixed(2) + "% · 24h";
+    moveNow.classList.toggle("down", pct < 0);
+    whenNow.textContent = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + " · market";
+  }
+  function render() {
+    clearInterval(clockTimer);
+    clearInterval(ethTimer);
+    const look = LOOKS[id - 1];
+    if (!look) { stage.textContent = "Missing card."; return; }
+    const bust = look.role === "Bot Buster";
+    document.documentElement.style.setProperty("--gold", look.gold);
+    document.documentElement.style.setProperty("--ink", look.ink);
+    document.documentElement.style.setProperty("--mute", look.mute);
+    document.documentElement.style.setProperty("--accent", look.accent);
+    document.documentElement.style.setProperty("--ground", look.ground);
+    document.documentElement.style.setProperty("--depth", look.depth);
+    document.title = look.name;
+    const foot = bust
+      ? `Token ${String(look.id).padStart(3, "0")} · The art does not change`
+      : `Token ${String(look.id).padStart(3, "0")} · ${look.suit} ${String(look.n).padStart(2, "0")} / 42`;
+    const extra = bust
+      ? `<div class="paths"><div class="path"><b style="color:var(--gold)">HERO</b><span>Burn it. It leaves.</span></div><div class="path bad"><b style="color:var(--accent)">VILLAIN</b><span>Pass it on.</span></div></div><button type="button" id="burn" data-stay>Burn this Bot Buster</button><p id="note"></p>`
+      : `<p class="stay">A plea cannot burn. It is the record. The holder can still hand you a Bot Buster next time, if you bid the pile without reading.</p>`;
+    const faceClass = face === 1 ? " show-almanac" : face === 2 ? " show-back" : "";
+    stage.innerHTML = `<article class="card${bust ? " buster" : ""}${faceClass}" id="card">
+      <div class="frame">
+        <div class="front">
+          <div class="top"><span>${String(look.n).padStart(2, "0")}</span><span class="brand">NFTzWORLD</span><span>${bust ? "BUSTER" : esc(look.suit)}</span></div>
+          <div class="coin">${coinSVG(look)}</div>
+          <h1>${esc(look.title)}</h1>
+          <div class="rule"><i></i><b></b><i></i></div>
+          <p class="charge">${esc(look.charge)}</p>
+          <div class="quote" aria-live="polite">
+            <p class="qlabel">Ether</p>
+            <p class="qprice" id="ethPrice">—</p>
+            <p class="qmove" id="ethMove">Reading the market</p>
+            <p class="qwhen" id="ethWhen"></p>
+          </div>
+          <p class="foot">${esc(foot)}</p>
+          <p class="hint">Tap for the almanac</p>
+        </div>
+        <div class="almanac">${almanacHTML(look)}</div>
+        <div class="back">
+          <div class="top"><span>${bust ? "Bot Buster" : "Open Plea"}</span><span>${esc(look.shot)}</span></div>
+          <h2>${esc(look.title)}</h2>
+          <p class="big">${esc(look.charge)}</p>
+          ${extra}
+          <p class="foot">${esc(foot)}</p>
+          <p class="hint">Tap for the face</p>
+        </div>
+      </div>
+    </article>`;
+    const card = document.getElementById("card");
+    card.addEventListener("click", (event) => {
+      const stay = event.target.closest("[data-stay]");
+      if (stay) {
+        const month = stay.getAttribute("data-month");
+        if (month) {
+          shown = new Date(shown.getFullYear(), shown.getMonth() + parseInt(month, 10), 1);
+          render();
+        } else if (stay.hasAttribute("data-now")) {
+          picked = null;
+          shown = new Date();
+          render();
+        } else if (stay.hasAttribute("data-day")) {
+          picked = parseYMD(stay.getAttribute("data-day"));
+          shown = new Date(picked.getFullYear(), picked.getMonth(), 1);
+          render();
+        }
+        return;
+      }
+      face = (face + 1) % 3;
+      render();
+    });
+    const table = card.querySelector("table.cal");
+    const frameEl = card.querySelector(".frame");
+    if (table && frameEl) table.style.width = Math.max(200, frameEl.clientWidth - 24) + "px";
+    const burn = document.getElementById("burn");
+    if (burn) {
+      burn.addEventListener("click", () => {
+        const note = document.getElementById("note");
+        note.textContent = "Burn unlocks on the live contract. This preview has no contract yet. A plea still cannot burn.";
+      });
+    }
+    if (face === 0) {
+      readEth();
+      ethTimer = setInterval(readEth, 30000);
+    }
+    if (face === 1) {
+      clockTimer = setInterval(() => {
+        const el = document.getElementById("clock");
+        if (!el) { clearInterval(clockTimer); return; }
+        const now = new Date();
+        el.textContent = fmtTime(now);
+        const dateEl = document.getElementById("dateLine");
+        if (dateEl) dateEl.textContent = fmtDate(now);
+        if (picked) return;
+        const info = moonInfo(now.getTime());
+        const name = document.getElementById("moonName");
+        const say = document.getElementById("moonSay");
+        const faceEl = document.getElementById("moonFace");
+        if (name) name.textContent = info.name;
+        if (say) say.textContent = info.age.toFixed(1) + " days · " + Math.round(info.illum * 100) + "% lit";
+        if (faceEl) faceEl.innerHTML = moonSVG(info.phase);
+        const yearLine = document.getElementById("yearLine");
+        if (yearLine) {
+          const n = doy(now);
+          yearLine.textContent = "Day " + n + " · " + (yearLen(now.getFullYear()) - n) + " left in " + now.getFullYear();
+        }
+      }, 1000);
+    }
+  }
+  window.addEventListener("resize", () => {
+    const table = document.querySelector("table.cal");
+    const frameEl = document.querySelector(".frame");
+    if (table && frameEl) table.style.width = Math.max(200, frameEl.clientWidth - 24) + "px";
+  });
+  render();
+})();
+</script>
+</body>
+</html>

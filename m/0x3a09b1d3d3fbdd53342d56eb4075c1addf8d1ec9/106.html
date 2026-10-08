@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <title>BRITE BLACK #106</title>
+  <style>
+    html,body { margin:0; height:100%; background:#050506; overflow:hidden; user-select:none; touch-action:manipulation; }
+    #board {
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 50% 50%, #1a1a1e 0%, #050506 100%);
+    }
+    #grid {
+      position:absolute; inset:4%;
+      display:grid;
+      grid-template-columns:repeat(16,1fr);
+      grid-template-rows:repeat(16,1fr);
+      gap:1.2%;
+    }
+    .hit {
+      border:0; padding:0; margin:0; min-width:0; min-height:0;
+      width:100%; height:100%;
+      background:transparent; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .peg {
+      display:block; width:72%; aspect-ratio:1; height:auto;
+      border-radius:50%;
+      background:#111114;
+      box-shadow: inset 0 0 0 1px #070708;
+      pointer-events:none;
+    }
+    #help {
+      position:absolute; inset:0; z-index:2; display:flex; align-items:center; justify-content:center;
+      text-align:center; color:#d8d8d8; cursor:pointer;
+      font:14px/1.45 -apple-system,BlinkMacSystemFont,sans-serif;
+      background:rgba(0,0,0,.55); padding:8%;
+    }
+    #help b { color:#fff; }
+  </style>
+</head>
+<body>
+  <div id="board"></div>
+  <div id="grid"></div>
+  <div id="help"><div><b>BRITE BLACK #106</b><br>Tap anywhere to start.<br>Then tap a peg to light it.<br>empty white red orange yellow green cyan blue magenta<br>Shift-tap reverses. Saves in this browser.</div></div>
+  <script>
+  (function () {
+    var N = 256;
+    var TID = 106;
+    var PAL = ["#111114", "#ffffff", "#ff0040", "#ff5a00", "#ffff00", "#39ff14", "#00ffff", "#4d7cff", "#ff00aa"];
+    var GLOW = ["inset 0 0 0 1px #070708", "0 0 6px #fff, 0 0 16px #fff", "0 0 6px #ff0040, 0 0 18px #ff0040", "0 0 6px #ff5a00, 0 0 18px #ff5a00", "0 0 6px #ffff00, 0 0 18px #ffff00", "0 0 6px #39ff14, 0 0 18px #39ff14", "0 0 6px #00ffff, 0 0 18px #00ffff", "0 0 6px #4d7cff, 0 0 18px #4d7cff", "0 0 6px #ff00aa, 0 0 18px #ff00aa"];
+    var KEY = "nftzworld-briteblack-" + TID;
+    var bits = [];
+    var help = document.getElementById("help");
+    function hideHelp() {
+      if (help) help.style.display = "none";
+    }
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(bits)); } catch (e) {}
+    }
+    function load() {
+      try {
+        var raw = localStorage.getItem(KEY);
+        if (!raw) return null;
+        var arr = JSON.parse(raw);
+        if (!arr || arr.length !== N) return null;
+        return arr;
+      } catch (e) { return null; }
+    }
+    function arrSafe(n) {
+      n = n | 0;
+      if (n < 0) return 0;
+      if (n >= PAL.length) return n % PAL.length;
+      return n;
+    }
+    function paint(el, i) {
+      var peg = el.firstChild;
+      peg.style.background = PAL[bits[i]];
+      peg.style.boxShadow = GLOW[bits[i]];
+    }
+    var saved = load();
+    var grid = document.getElementById("grid");
+    var html = "";
+    for (var i = 0; i < N; i++) {
+      bits[i] = saved ? arrSafe(saved[i]) : 0;
+      html += '<button type="button" class="hit" id="p'+i+'"><i class="peg"></i></button>';
+    }
+    grid.innerHTML = html;
+    if (saved) hideHelp();
+    if (help) {
+      help.onclick = function (ev) {
+        ev.preventDefault();
+        hideHelp();
+      };
+    }
+    for (var j = 0; j < N; j++) {
+      (function (i) {
+        var el = document.getElementById("p"+i);
+        paint(el, i);
+        el.onclick = function (ev) {
+          hideHelp();
+          var dir = ev.shiftKey ? -1 : 1;
+          bits[i] = (bits[i] + dir + PAL.length) % PAL.length;
+          paint(el, i);
+          save();
+        };
+      })(j);
+    }
+  })();
+  </script>
+</body>
+</html>
