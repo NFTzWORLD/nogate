@@ -12,6 +12,12 @@
     "port": 4666
   },
   {
+    "name": "KitchenCounter",
+    "address": "0xf770a2D3e947444B4536f8A3DD06654F0B2C3824",
+    "status": "SEATED",
+    "port": 5529
+  },
+  {
     "name": "LOT 25 Flytrap TV",
     "address": "0x1035bF20CC6fFf7F4113eEf5A4Dd45b6F115d125",
     "status": "LIVE",

@@ -82,6 +82,7 @@
     "0x42ca9a5fefe18453d9b6a2175592c580784dc4f0": "https://nftzworld.github.io/pap2-one/play.html",
     "0x77973da54f5125963c57d303741c525c1e510e90": "https://nftzworld.github.io/bonkit/play-{id}.html",
     "0xa633650cea933c2c594013ff0dc0e33dfe6e39b8": "https://nftzworld.github.io/notepin/play-{id}.html",
+    "0xf770a2d3e947444b4536f8a3dd06654f0b2c3824": "https://nftzworld.github.io/kitchencounter/play-{id}.html",
     "0xe38c7d0ed787ae6ab5a2b40dc7cc3a2001320abd": "https://nftzworld.github.io/byte/play-{id}.html",
     "0xf197e65c7f09bf8fea40b1092ac62791648f199f": "https://nftzworld.github.io/word/play-{id}.html"
   };
