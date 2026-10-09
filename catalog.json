@@ -210,6 +210,12 @@
     "port": 8421
   },
   {
+    "name": "NFTzWORLD NotePin",
+    "address": "0xA633650cEA933c2c594013Ff0dC0E33dfE6e39B8",
+    "status": "SEATED",
+    "port": 5528
+  },
+  {
     "name": "NFTzWORLD OpenPlea",
     "address": "0xE5B2ff7Eda19E4A1bE70719c4f7C66B2b14ea25d",
     "status": "SEATED",
