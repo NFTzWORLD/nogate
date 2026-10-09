@@ -418,5 +418,11 @@
     "address": "0x834a2aa520f58bf6670740463a00e6ecf6022d0c",
     "status": "LIVE",
     "port": 1946
+  },
+  {
+    "name": "StopWatching",
+    "address": "0x683fc87dCBA01B712DEc7bD98454c973aD01b2E3",
+    "status": "SEATED",
+    "port": 5530
   }
 ]
