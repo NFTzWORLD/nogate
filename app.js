@@ -934,7 +934,7 @@
         return;
       }
       const img = artUrl(meta.image);
-      if (!img) return;
+      if (!img || picture) return;
       const pic = document.createElement("img");
       pic.alt = "";
       pic.addEventListener("load", () => {
@@ -949,7 +949,7 @@
       pic.src = img;
       frame.replaceChildren(pic);
     }).catch((e) => {
-      if (gen !== viewGen || known) return;
+      if (gen !== viewGen || known || picture) return;
       const fallback = pagePlay(item.address, id);
       if (cfg.pages && fallback) {
         const play = el("button", { type: "button", class: "solid", text: "Play" });
