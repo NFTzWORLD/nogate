@@ -366,6 +366,12 @@
     "port": 5534
   },
   {
+    "name": "ROBIN LINUX",
+    "address": "0xC9E09AeE5b5EA5be55D4f245533c58Bb1069066e",
+    "status": "SEATED",
+    "port": 5537
+  },
+  {
     "name": "NFTzWORLD WAR",
     "address": "0xA858f75d4BB10007C83c95cf737615C8339a7BC7",
     "status": "LIVE",

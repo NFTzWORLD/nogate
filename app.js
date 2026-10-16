@@ -85,6 +85,7 @@
     "0xf770a2d3e947444b4536f8a3dd06654f0b2c3824": "https://nftzworld.github.io/kitchencounter/play-{id}.html",
     "0x683fc87dcba01b712dec7bd98454c973ad01b2e3": "https://nftzworld.github.io/stopwatching/play-{id}.html",
     "0x6efd1947badff1d3d3f2e96d23e5f1a1b19a3a42": "https://nftzworld.github.io/tty/play-{id}.html",
+    "0xc9e09aee5b5ea5be55d4f245533c58bb1069066e": "https://nftzworld.github.io/robin-linux/play-{id}.html",
     "0xe38c7d0ed787ae6ab5a2b40dc7cc3a2001320abd": "https://nftzworld.github.io/byte/play-{id}.html",
     "0xf197e65c7f09bf8fea40b1092ac62791648f199f": "https://nftzworld.github.io/word/play-{id}.html"
   };
