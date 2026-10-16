@@ -1,5 +1,11 @@
 [
   {
+    "name": "GLYPH",
+    "address": "0xDcf045eC3a59cB56c47139ec30F52CC168A61d42",
+    "status": "SEATED",
+    "port": 5532
+  },
+  {
     "name": "GOLD LODGE 33",
     "address": "0x207fe162029a0aB160918Dd70922DA4082833Af9",
     "status": "LIVE",
@@ -354,6 +360,12 @@
     "port": 1360
   },
   {
+    "name": "TTY",
+    "address": "0x6eFD1947bAdff1D3D3F2e96d23e5f1A1b19a3a42",
+    "status": "SEATED",
+    "port": 5534
+  },
+  {
     "name": "NFTzWORLD WAR",
     "address": "0xA858f75d4BB10007C83c95cf737615C8339a7BC7",
     "status": "LIVE",
@@ -388,6 +400,12 @@
     "address": "0x463FD27138F2d2643Dbd95475509d277F0EF3BE1",
     "status": "CONTRACT",
     "port": 2016
+  },
+  {
+    "name": "XYZ0",
+    "address": "0xa968102a880D535FC8Db1e884cA83F93Cb6Df988",
+    "status": "SEATED",
+    "port": 5533
   },
   {
     "name": "NFTzWORLD YAP",

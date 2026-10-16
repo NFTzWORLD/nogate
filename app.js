@@ -84,6 +84,7 @@
     "0xa633650cea933c2c594013ff0dc0e33dfe6e39b8": "https://nftzworld.github.io/notepin/play-{id}.html",
     "0xf770a2d3e947444b4536f8a3dd06654f0b2c3824": "https://nftzworld.github.io/kitchencounter/play-{id}.html",
     "0x683fc87dcba01b712dec7bd98454c973ad01b2e3": "https://nftzworld.github.io/stopwatching/play-{id}.html",
+    "0x6efd1947badff1d3d3f2e96d23e5f1a1b19a3a42": "https://nftzworld.github.io/tty/play-{id}.html",
     "0xe38c7d0ed787ae6ab5a2b40dc7cc3a2001320abd": "https://nftzworld.github.io/byte/play-{id}.html",
     "0xf197e65c7f09bf8fea40b1092ac62791648f199f": "https://nftzworld.github.io/word/play-{id}.html"
   };
@@ -111,6 +112,18 @@
     if (!raw || typeof raw !== "string") return "";
     if (raw.startsWith("ipfs://")) return "https://gateway.pinata.cloud/ipfs/" + raw.slice(7);
     if (raw.startsWith("https://")) return raw;
+    return "";
+  }
+  function knownStill(item, id) {
+    if (!item) return "";
+    const n = Number(id);
+    if (item.name === "GLYPH" && n >= 1 && n <= 702) {
+      const ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor((n - 1) / 27)];
+      return "art/glyph/" + ch + ".png";
+    }
+    if (item.name === "XYZ0" && n >= 1 && n <= 858) {
+      return "https://nftzworld.github.io/xyz0/art/" + n + ".png";
+    }
     return "";
   }
   function artUrl(raw) {
@@ -875,6 +888,17 @@
     });
 
     const known = cfg.pages ? knownPlay(item.address, id) : "";
+    const picture = knownStill(item, id);
+    if (picture && !known) {
+      const pic = document.createElement("img");
+      pic.alt = "";
+      pic.addEventListener("load", () => {
+        if (gen !== viewGen || frame.classList.contains("live")) return;
+        frame.hidden = false;
+      });
+      pic.src = picture;
+      frame.replaceChildren(pic);
+    }
     if (known) {
       const play = el("button", { type: "button", class: "solid", text: "Play" });
       play.addEventListener("click", () => openApp(known, item.name + " #" + id, gen));
