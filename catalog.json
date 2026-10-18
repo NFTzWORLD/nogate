@@ -222,6 +222,12 @@
     "port": 8421
   },
   {
+    "name": "NOD",
+    "address": "0x19ACa6663A72b98516fB5798f03e85585201c9C0",
+    "status": "LIVE",
+    "port": 5538
+  },
+  {
     "name": "NFTzWORLD NotePin",
     "address": "0xA633650cEA933c2c594013Ff0dC0E33dfE6e39B8",
     "status": "SEATED",
